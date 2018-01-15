@@ -1,8 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from utils.models import BaseModel
-
-
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from django.conf import settings
+from utils import constants
 # Create your models here.
 
 
@@ -10,6 +11,14 @@ class User(AbstractUser, BaseModel):
     """用户"""
     class Meta:
         db_table = "df_users"
+
+    def generate_active_token(self):
+        """生成用户激活的令牌"""
+        # 创建序列化工具对象
+        # 对象s 参数1:秘钥 2:失效时间
+        s = Serializer(settings.SECRET_KEY,constants.USER_ACTIVE_EXPIRES )
+        token = s.dumps({'user_id':self.id}).decode()
+        return token
 
 
 class Address(BaseModel):
