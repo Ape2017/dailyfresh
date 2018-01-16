@@ -1,4 +1,112 @@
-签名序列化:
+总目录:
+    包:
+        dailyfresh  项目包:  系统配置模块setting.py 路由模块urls.py 服务器配置模块wsgi.py
+        apps      应用总包:  包含所有应用包 users carts goods orders 每个包中主要模块有 urls.py view.py models.py admin.py
+        utils   其他资源包:  主要模块:数据库路由模块db_routers.py 常量表模块constants.py 基础模型类模块:models.py(存储公用字段,创建时间和修改时间)
+
+    目录:
+        static: 静态资源存储目录 js css images
+        templates:模板目录 html
+    文件:
+        manage.py 是项目运行的入口，指定配置文件路径
+day01:
+    0.搭建虚拟环境
+        1.1安装:
+            sudo pip install virtualenv
+            sudo pip install virtualenvwrapper
+        1.2创建:
+            mkvirtualenv 虚拟环境名称
+        1.3查看:
+            workon
+        1.4使用:
+            workon 虚拟环境名称
+        1.5退出:
+            deactivate
+        1.6删除:
+            rmvirtualenv 虚拟环境名
+
+    1.创建项目流程:
+        1.1切换到虚拟环境: workon 虚拟环境
+        1.2创建工程: django-admin startproject 项目名
+        1.3创建应用: python manage.py startapp 应用名
+        1.4注册应用: 修改项目目录下的同名模块下setting.py里的INSTALLED_APPS列表,增加对应的应用名
+    2.分析需求,创建模型类
+        2.1通过UML建模语言,分析出类表
+        2.2定义模型类,在utils中创建models.py模块,存储公用字段.
+        2.3登陆数据库系统,创建数据库
+            mysql -uroot -pmyql
+            create database 数据库名 charset=utf8;
+            exit
+        2.4在setting中配置主从数据库
+           DATABASES = {
+                'default': {
+                    'ENGINE': 'django.db.backends.mysql',
+                    'HOST': 'localhost',
+                    'PORT': 3306,
+                    'NAME': '数据库名',
+                    'USER': 'root',
+                    'PASSWORD': 'mysql'
+                },
+                'slave': {
+                    'ENGINE': 'django.db.backends.mysql',
+                    'HOST': 'localhost',
+                    'PORT': 3306,
+                    'NAME': '数据库名',
+                    'USER': 'root',
+                    'PASSWORD': 'mysql'
+                },
+           }
+    3.在utils包中创建数据库路由模块db_routers.py,指定数据读写分离
+    4.在setting中配置数据库路由
+        DATABASES_ROUTERS = ['utils.db_routers.MasterSlaveRouter']
+    5.执行生成数据库迁移文件和迁移表
+        5.1.生成迁移文件：根据模型类生成创建表的语句
+            命令:python manage.py makemigrations
+        5.2.执行迁移：根据第一步生成的语句在数据库中创建表
+            命令:python manage.py migrate
+
+day02:用户模块设计
 
 
-ts=TS('dfdfad',3600)
+>>>ts = TS("dfywoiefyd98sfy9w8ef9w", 3600)
+
+>>> ts = TS("dfywoiefyd98sfy9w8ef9w", 3600)
+>>> data = {"user_id": 4}
+
+
+# dumps 方法 将数据转换（序列化）为字符串
+>>> ts.dumps(data)
+b'eyJhbGciOiJIUzI1NiIsImlhdCI6MTUxNjAwMzkxNywiZXhwIjoxNTE2MDA3NTE3fQ.eyJ1c2VyX2lkIjo0fQ.hSQAaFGthrnrlavOaayZ8-gJclzk04FFVlAF_23Eql8'
+
+# 字符串中包含的数据 ： {"user_id": 4}  创建的时间  3600秒的有效期
+
+b''  python3  bytes类型 字节类型 （二进制）
+
+# bytes类型转换为字符串   b''.decode()
+# 字符串类型转换为bytes   ''.encode()
+
+
+# 获取数据
+>>> ts.loads(s)
+{'user_id': 4}
+>>> d = ts.loads(s)
+>>> type(d)
+<class 'dict'>
+>>> d["user_id"]
+4
+>>>
+
+# 过期情况
+>>> ts = TS("dfywoiefyd98sfy", 3)
+>>> d
+{'user_id': 4}
+>>> s = ts.dumps(d)
+>>> s
+b'eyJhbGciOiJIUzI1NiIsImlhdCI6MTUxNjAwNDM3OSwiZXhwIjoxNTE2MDA0MzgyfQ.eyJ1c2VyX2lkIjo0fQ.XU-MjFeY0GXvAhvvOtbsys1OOxMcoDtQZTFIHDKGNNo'
+>>> ts.loads(s)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/Users/delron/.virtualenv/django_py3/lib/python3.6/site-packages/itsdangerous.py", line 807, in loads
+    date_signed=self.get_issue_date(header))
+itsdangerous.SignatureExpired: Signature expired
+>>>

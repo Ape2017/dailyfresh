@@ -91,7 +91,7 @@ WSGI_APPLICATION = 'dailyfresh.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'HOST': '192.168.62.129',
+        'HOST': 'localhost',
         'PORT': 3306,
         'NAME': 'dailyfresh_06',
         'USER': 'root',
@@ -99,7 +99,7 @@ DATABASES = {
     },
     'slave': {
         'ENGINE': 'django.db.backends.mysql',
-        'HOST': '192.168.62.129',
+        'HOST': 'localhost',
         'PORT': 3306,
         'NAME': 'dailyfresh_06',
         'USER': 'root',
@@ -131,5 +131,9 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 # Email
-# EMAIL_BACKEND =
-# EMAIL_USER =
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.126.com'
+EMAIL_PORT = 25
+EMAIL_HOST_USER = 'daily_fresh@126.com'
+EMAIL_HOST_PASSWORD = 'ITCAST123'
+EMAIL_FROM = '天天生鲜<daily_fresh@126.com>'
