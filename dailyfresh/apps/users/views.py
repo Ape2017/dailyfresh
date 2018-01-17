@@ -22,6 +22,8 @@ from utils import constants
 from django.conf import settings
 # 通过委托发送邮件 celery(分布式任务队列)
 from celery_task.tasks import send_active_email
+# 用户认证组件
+from django.contrib.auth import authenticate,login
 
 
 # 用户注册
@@ -103,7 +105,7 @@ class RegisterView(View):
 
         # 2.返回注册成功信息,提示激活
         url = reverse('goods:index')
-        print('重定向路由:'+ url)
+        # print('重定向路由:'+ url)
         # redirect()参数:url 重定向:返回的是一个请求链接
         return redirect(url)
 
@@ -158,71 +160,39 @@ class LoginView(View):
         :param (参数0) request: 用户请求数据
         :return(返回值2): 返回response数据
         """
-        # 1.1.获取用户输入的数据: 用户名,密码,确认密码,邮箱,是否同意协议
-        user_name = request.POST.get('user_name')
+        # 1.1.获取用户输入的数据: 用户名,密码
+        user_name = request.POST.get('username')
         password = request.POST.get('pwd')
-        password2 = request.POST.get('cpwd')
-        email = request.POST.get('email')
-        allow = request.POST.get('allow')
         # 1.2.参数校验
         # python中0 0.0 空字符串'' 空列表[] 空元祖() 空字典{} 空None False 均为假
         # all处理所有的元素,只有所有元素都为真,all函数才会返回真,否则返回假
-        if not all([user_name, password, password2, email, allow]):
-            # 参数不完整
-            # reverse 逆向解析
-            url = reverse('users:register')
-            print(url)
-            # redirect()参数:url 重定向:返回的是一个请求链接
-            return redirect(url)
-        # 判断两次密码是否一致
-        if password != password2:
-            return render(request, 'register.html', {'errmsg': '两次密码不一致'})
-        # 判断邮箱格式是否正确
-        # re.search()不严格匹配
-        # re.match() 严格匹配
-        if not re.match(r'^[a-z0-9][\w\.\-]*@[a-z0-9\-]+(\.[a-z]{2,5}){1,2}$', email):
-            # 邮箱不匹配
-            return render(request, 'register.html', {'errmsg': '邮箱格式不正确'})
+        if not all([user_name, password]):
+            return render(request, 'login.html', {'errmsg': '用户名密码不能为空'})
+        # 1.3 业务处理
+        # 原始思路
+        # 判断用户名或密码是否正确
+        # 判断用户名或密码是否正确
+        # 根据用户名查询数据库,获取用户的密码信息
+        # user = User.objects.get(username=user_name)
+        # 对用户输入的登陆密码惊喜加密处理,然后于数据库查询的密码惊喜对比,如果相同,表示登陆成功,否则失败
+        # user_password = sha256(password)
+        # if password ==  user_password
 
-        # 判断是否勾选了协议
-        # 复习:前端事件
-        if allow != 'on':
-            return render(request, 'register.html', {'errmsg': '请同意服务协议'})
+        # 使用django自带的认证系统
+        user = authenticate(username = user_name, password = password)
+        if user is None:
+            # 认证失败
+            return render(request, 'login.html', {'errmsg': '用户名密码错误'})
+        # 表示用户名密码正确
+        # 判断判断激活状态
+        if user.is_active is False:
+            # 表示用户未激活
+            return render(request, 'login.html', {'errmsg': '账户未激活'})
 
-        # 1.3.业务处理
-        # 1.3.1判断用户名是否存在
-        try:
-            # 保存数据到数据库中
-            # create_user方法是django用户认证系统提供的
-            # 会帮助我们加密密码并保存到数据库中
-            user = User.objects.create_user(user_name, email, password)
-        except IntegrityError as e:
-            # 表示用户名已注册
-            return render(request, 'register.html', {'errmsg': '用户名已经注册'})
-        # 1.3.2更改用户的激活状态,将默认的已激活状态改为未激活状态
-        user.is_active = False
-        user.save()
+        # 登陆成功
+        # 记录用户的登陆状态到session中
+        # 使用Django的认证系统记录用户登陆
+        login(request,user)
 
-        # 1.3.3生成用户激活的身份 token(令牌)
-        # 模型类中定义了generate_active_token方法,返回值为token的字符串
-        token = user.generate_active_token()
-
-        # 1.3.4拼接激活的连接
-        active_url = 'http://127.0.0.1:8000/users/active/%s' % token
-
-        # 1.3.5发送邮件
-        # 1.3.5.1同步发送邮件(阻塞模式,效率不高)
-        # 发送激活的邮件
-        # send_mail(邮件标题,邮件内容,发件人,收件人,html_message=html格式的邮件内容)
-        html_message = """
-        <h1>天天生鲜用户激活</h>
-        <p>%s<p>
-        <a href=%s>%s</a>
-        """%(user_name, active_url, active_url)
-        send_mail('天天生鲜','',settings.EMAIL_FROM,[email],html_message=html_message)
-
-        # 1.3.5.2异步发送邮件(非阻塞)
-        # send_active_email.delay(user_name, active_url, email)
-
-        # 2.返回值
-        return HttpResponse('请打开邮箱激活')
+        # 返回
+        return redirect(reverse('goods:index'))
