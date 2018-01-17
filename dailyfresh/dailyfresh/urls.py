@@ -15,10 +15,16 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.http import HttpResponse
+from django.shortcuts import render
+
 import apps.users.urls
+import apps.goods.urls
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^users/', include(apps.users.urls, namespace="users")),
+    url(r'^goods$', include(apps.goods.urls, namespace="goods")),
+
 ]
 

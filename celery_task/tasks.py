@@ -1,14 +1,17 @@
 # 受django委托发送邮件方 celery(分布式任务队列)
 from celery import Celery
 # 将django项目的配置文件信息保存到操作系统中
+import sys
+sys.path.append('../dailyfresh/dailyfresh.settings')
+print(sys.path)
 import os
 os.environ['DJANGO_SETTINGS_MODULE'] = 'dailyfresh.settings'
 # 在启动celery的时候需要，在启动django的时候不需要，需要注释掉
 # 让django初始化一下，django读入配置文件的信息
 # django.setup()会询问操作系统配置文件的位置，读入配置文件的信息
 # 以下两行在启动celery时打开注释,启动Django时注释
-# import django
-# django.setup()
+import django
+django.setup()
 # 启动celery的命令
 # celery -A celery_task.tasks worker -l info
 # django系统调用邮箱接口发送邮件的函数

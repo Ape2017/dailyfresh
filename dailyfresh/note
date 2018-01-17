@@ -65,48 +65,100 @@ day01:
         5.2.执行迁移：根据第一步生成的语句在数据库中创建表
             命令:python manage.py migrate
 
-day02:用户模块设计
+day02:用户模块中用户视图注册业务逻辑
+    用户注册业务:
+        0.行为分析:
+            a.浏览注册页面 b.用户注册
+        1.逻辑分析:
+            1.不同的行为返回不同的结果
+            2.通过定义类视图处理行为
+        2.技术选型:
+            # 函数视图(demo)
+            # def register(request):
+            #     """注册模块"""
+            #     if request.method == "GET":
+            #         return render(request, "register.html")
+            #     else:
+            #         # post
+            #         # 接收表单数据，
+            #         pass
+            # 视图类(工程用)
+
+        3.逻辑处理
+            行为1:浏览页面
+                关键信息:
+                    1.1请求方式:get
+                    1.2逻辑:定义get函数,返回register.html
+                    1.3返回结果:注册页面
+            行为2:注册
+                关键信息:
+                    1.1请求方式:post
+                    1.2逻辑:
+                        0.通过get函数获取用户输入的数据
+                        1.判断用户输入数据的合法性
+                            a.是否符合数据规则,如是否为空 false:提示输入数据
+                            b.判断两次密码是否一致 false:提示密码不一致
+                            c.判断邮箱是否符合规则 false:提示邮箱不正确
+                            d.判断是否勾选了协议 false:提示请勾选协议
+                            e.判断用户名是否唯一 false:提示用户名已经存在,请重新输入
+                            f.更改用户的默认激活状态,将已激活改为未激活
+                            g.通过用户对象方法generate_active_token生成令牌,传入用户名和失效时间生成序列化字串
+                            h.通过拼接字串方式生成激活链接和激活页面
+                            i.通过celery异步发送激活邮件
+                            f.返回信息通知用户注册成功并需要在24小时内激活账户
+                    1.3返回结果:
+                        返回注册成功页面,需要激活账户.
+        4.其他知识:
+            激活链接的生成:数据序列化,通过在User类中定义generate_active_token方法,生成序列化字符串后和/ative/拼接成字符串.
+            序列化函数逻辑:
+                  导包: from itsdangerous import TimedJSONWebSignatureSerializer as TS
+               new对象: ts = TS("dfywoiefyd98sfy9w8ef9w", 3600) 参数1:secret_key(秘钥) 字符串类型,随机字符串类型, 参数2: 失效时间:单位秒
+                  数据: data = {"user_id": 4}
+                  序化: token_b = ts.dumps(data) 参数:JSON数据类型的字典(非唯一,字符串也可以,但不建议使用) 返回值:字节类型字符串
+                  转化: token = token_b.encode() #  将bytes转成string,必须转成字符串类型,不然无法拼接成超链接.
+                  获取: data = ts.loads(token) #通过转化后的字符串获取数据
+                  取值: value = data.get('use_id') # 4 此处用get方法是若找不到将返回None,而通过key取值会报keyerror
+                  异常: itsdangerous.SignatureExpired: Signature expired 异常说明:信号签名:签名过期(超过有效期)
+
+    发送邮件业务:
+        0.行为分析: 发送激活邮件
+        1.逻辑分析:
+            1.1 同步发送:通过django系统自己发送,这样会让系统工作在阻塞状态,效率低,用户体验差,不建议使用.
+            1.2 异步发送:委托他人发送,系统工作在非阻塞状态,效率高,用户体验好,主要为celery包
+        2.技术选型:
+            选择异步发送方式,异步发送方式委托celery执行(分布式任务队列)
+        3.逻辑处理:
+            3.1 django生成发送邮件任务
+                导包:导入发布任务的处理模块
+                    from celery_task.tasks import send_active_email
+               初始化:
+                导包:
+                    from celery import Celery
+                    from django.core.mail import send_mail
+                    from django.conf import settings
+                创建任务:
+                    app = Celery('dailyfresh', broker='redis://127.0.0.1:6379/0')
+                注册任务处理函数:
+                    @app.task()
+                    def send_active_email(user_name,active_url,email)
+            3.2 django将任务发布到缓存redis中
+                发布:通过任务的调用任务的快捷方式delay()函数将任务发布到任务队列(消息中间人redis 缓存)中
+                    send_active_email.delay(user_name, active_url, email)
+            3.3 celery到缓存中取任务并执行
+                启动:celery -A celery_task.tasks worker -l info
+                    初始化:
+                         导包: from celery import Celery
+               将项目导入到os中: import os
+                              os.environ['DJANGO_SETTINGS_MODULE'] = 'dailyfresh.settings'
+                 初始化django: import django
+                              django.setup()
+            导入django对应的包: from django.core.mail import send_mail
+                              from django.conf import settings
+               创建celery应用:  参数1: broker(消息中间人)名字 参数2:任务存储空间(缓存)
+                              app = Celery('dailyfresh', broker='redis://127.0.0.1:6379/0')
+               注册处理任务函数: @app.task()
+                              def send_active_email(user_name,active_url,email)
+                 执行:
+                    自动执行任务
 
 
->>>ts = TS("dfywoiefyd98sfy9w8ef9w", 3600)
-
->>> ts = TS("dfywoiefyd98sfy9w8ef9w", 3600)
->>> data = {"user_id": 4}
-
-
-# dumps 方法 将数据转换（序列化）为字符串
->>> ts.dumps(data)
-b'eyJhbGciOiJIUzI1NiIsImlhdCI6MTUxNjAwMzkxNywiZXhwIjoxNTE2MDA3NTE3fQ.eyJ1c2VyX2lkIjo0fQ.hSQAaFGthrnrlavOaayZ8-gJclzk04FFVlAF_23Eql8'
-
-# 字符串中包含的数据 ： {"user_id": 4}  创建的时间  3600秒的有效期
-
-b''  python3  bytes类型 字节类型 （二进制）
-
-# bytes类型转换为字符串   b''.decode()
-# 字符串类型转换为bytes   ''.encode()
-
-
-# 获取数据
->>> ts.loads(s)
-{'user_id': 4}
->>> d = ts.loads(s)
->>> type(d)
-<class 'dict'>
->>> d["user_id"]
-4
->>>
-
-# 过期情况
->>> ts = TS("dfywoiefyd98sfy", 3)
->>> d
-{'user_id': 4}
->>> s = ts.dumps(d)
->>> s
-b'eyJhbGciOiJIUzI1NiIsImlhdCI6MTUxNjAwNDM3OSwiZXhwIjoxNTE2MDA0MzgyfQ.eyJ1c2VyX2lkIjo0fQ.XU-MjFeY0GXvAhvvOtbsys1OOxMcoDtQZTFIHDKGNNo'
->>> ts.loads(s)
-Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-  File "/Users/delron/.virtualenv/django_py3/lib/python3.6/site-packages/itsdangerous.py", line 807, in loads
-    date_signed=self.get_issue_date(header))
-itsdangerous.SignatureExpired: Signature expired
->>>
