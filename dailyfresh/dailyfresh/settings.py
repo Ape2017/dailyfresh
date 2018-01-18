@@ -11,30 +11,44 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.8/ref/settings/
 """
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-import os
 
+import os
+import sys
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+# 项目根目录 os.path.dirname 获取上一级目录名 os.path.abspath 获取当前目录的名字
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# 添加app应用所在路径到python解释的导包路径中
-import sys
-sys.path.insert(1,os.path.join(BASE_DIR, 'apps'))
-
+# 添加apps下所有应用的所在路径到python解释器的导包路径中
+sys.path.insert(1, os.path.join(BASE_DIR, 'apps'))
 
 # Quick-start development settings - unsuitable for production
+# 快速启动开发设置——不适合生产 详细信息查看下面路径
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+# 安全警告:保留生产秘密中使用的秘密密钥
+# 秘钥 用来生成身份令牌
 SECRET_KEY = 'y!jm-%8fi$uf4q7_h_^_9m3ea)ik8wwkin0$223ojqr7!3y_cd'
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# 安全警告:不要在生产过程中运行调试
+# 调试模式在正常上线时必须改为fals
+# 调试模式
 DEBUG = True
-
+# ALLOWED_HOSTS是为了限定请求中的host值,以防止黑客构造包来发送请求.
+# 只有在列表中的host才能访问.强烈建议不要使用*通配符去配置,
+# 另外当DEBUG设置为False的时候必须配置这个配置.否则会抛出异常.配置模板如下:
+# DEBUG = False
+# ALLOWED_HOSTS = [
+#     '.example.com',  # Allow domain and subdomains
+#     '.example.com.',  # Also allow FQDN and subdomains
+# ]
+# 主机域名列表
 ALLOWED_HOSTS = []
 
-
 # Application definition
-
+# 应用注册表
+# INSTALLED_APPS是一个一元数组.里面是应用中要加载的自带或者自己定制的app包路径列表.
 INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
@@ -53,6 +67,7 @@ INSTALLED_APPS = (
 AUTH_USER_MODEL = 'users.User'
 
 
+# web应用中需要加载的一些中间件列表.是一个一元数组.里面是django自带的或者定制的中间件包路径,如下：
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -84,7 +99,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'dailyfresh.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
@@ -110,11 +124,31 @@ DATABASES = {
 # 指明数据库的读写分离路由
 DATABASES_ROUTERS = ['utils.db_routers.MasterSlaveRouter']
 
+# Cache
+# http://django-redis-chs.readthedocs.io/zh_CN/latest/#cache-backend
+# 缓存配置
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
+
+# Session
+# http://django-redis-chs.readthedocs.io/zh_CN/latest/#session-backend
+# 会话设置
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
-
+# 后台显示语言
 LANGUAGE_CODE = 'zh-hans'
-
+# 时区
 TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
@@ -123,17 +157,21 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
+# 静态文件路径,模板文件引用静态文件时使用
 STATIC_URL = '/static/'
+# 将静态文件目录的路径添加到添加到静态文件路径中
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
-# Email
+# 邮件相关信息配置
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.126.com'
 EMAIL_PORT = 25
 EMAIL_HOST_USER = 'daily_fresh@126.com'
 EMAIL_HOST_PASSWORD = 'ITCAST123'
 EMAIL_FROM = '天天生鲜<daily_fresh@126.com>'
+
+# 被django的login_required装饰器使用的参数,登陆的网址
+LOGIN_URL = "/users/login"

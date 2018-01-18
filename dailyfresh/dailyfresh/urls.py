@@ -15,13 +15,20 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-import apps.users.urls
-import apps.goods.urls
+import users.urls
+import goods.urls
 
 urlpatterns = [
+    # 后台用户管理
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^users/', include(apps.users.urls, namespace="users")),
-    url(r'^/', include(apps.goods.urls, namespace="goods")),
+    # 用户管理app
+    url(r'^users/', include(users.urls, namespace="users")),
+    # 商品中心app
+    url(r'^', include(goods.urls, namespace="goods")),
+    # 购物车app
+    url(r'^carts/', include(goods.urls, namespace="carts")),
+    # 订单管理app
+    url(r'^orders/', include(goods.urls, namespace="orders")),
 
 ]
 

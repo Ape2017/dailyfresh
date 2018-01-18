@@ -73,16 +73,16 @@ day02:用户模块中用户视图注册业务逻辑
             1.不同的行为返回不同的结果
             2.通过定义类视图处理行为
         2.技术选型:
-            # 函数视图(demo)
-            # def register(request):
-            #     """注册模块"""
-            #     if request.method == "GET":
-            #         return render(request, "register.html")
-            #     else:
-            #         # post
-            #         # 接收表单数据，
-            #         pass
-            # 视图类(工程用)
+             函数视图(demo)
+             def register(request):
+                 """注册模块"""
+                 if request.method == "GET":
+                     return render(request, "register.html")
+                 else:
+                     # post
+                     # 接收表单数据，
+                     pass
+             视图类(工程用)
 
         3.逻辑处理
             行为1:浏览页面
@@ -160,5 +160,10 @@ day02:用户模块中用户视图注册业务逻辑
                               def send_active_email(user_name,active_url,email)
                  执行:
                     自动执行任务
+
+day03:
+    用户登陆
+    用户退出
+    个人中心
 
 
