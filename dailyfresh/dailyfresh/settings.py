@@ -11,9 +11,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.8/ref/settings/
 """
 
-
 import os
 import sys
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 # 项目根目录 os.path.dirname 获取上一级目录名 os.path.abspath 获取当前目录的名字
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -65,7 +65,6 @@ INSTALLED_APPS = (
 # 声明django自带的认证系统要使用的用户数据表对应的模型类
 # AUTH_USER_MODEL = '应用名.模型类名'
 AUTH_USER_MODEL = 'users.User'
-
 
 # web应用中需要加载的一些中间件列表.是一个一元数组.里面是django自带的或者定制的中间件包路径,如下：
 MIDDLEWARE_CLASSES = (
@@ -137,7 +136,6 @@ CACHES = {
     }
 }
 
-
 # Session
 # http://django-redis-chs.readthedocs.io/zh_CN/latest/#session-backend
 # 会话设置
@@ -175,3 +173,19 @@ EMAIL_FROM = '天天生鲜<daily_fresh@126.com>'
 
 # 被django的login_required装饰器使用的参数,登陆的网址
 LOGIN_URL = "/users/login"
+
+# FastDFS客户端的配置文件路径
+FASTDFS_CLIENT_CONF = os.path.join(BASE_DIR, 'utils/fastdfs_storage/client.conf')
+
+# FastDFS服务器中ngnix服务器的访问路径
+FASTDFS_NGINX_URL = "http://10.211.55.5:8888/"
+
+# 注册django使用的默认文件存储系统
+DEFAULT_FILE_STORAGE = "utils.fastdfs_storage.storage.FastDFSStorage"
+
+# tinymce富文本编辑器的配置参数
+TINYMCE_DEFAULT_CONFIG = {
+    'theme': 'advanced',
+    'width': 800,
+    'height': 600,
+}

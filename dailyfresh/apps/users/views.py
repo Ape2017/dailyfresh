@@ -1,5 +1,4 @@
-# 正则匹配模块 校验邮箱时使用
-import re
+import re  # 正则匹配模块 校验邮箱时使用
 # 返回http页面
 from django.http import HttpResponse
 # ***反向解析***
@@ -16,9 +15,9 @@ from django.db import IntegrityError
 from django.core.mail import send_mail
 # 生成签名(序列化)
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, SignatureExpired
-# 常量模块
+# constants常量模块
 from utils import constants
-# 系统配置
+# 系统配置文件
 from django.conf import settings
 # 通过委托发送邮件 celery(分布式任务队列)
 from celery_task.tasks import send_active_email
@@ -28,6 +27,10 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 # 自定义组件,进行访问权限校验,若是已登陆,访问请求页面,若未登陆,重定向到登陆页面
 from utils.commons import LoginRequiredMixin
+# get_redis_connection操作redis数据库
+from django_redis import get_redis_connection
+# GoodsSKU商品模型类
+from goods.models import GoodsSKU
 
 
 # 用户注册
@@ -189,7 +192,6 @@ class LoginView(View):
         # 对用户输入的登陆密码惊喜加密处理,然后于数据库查询的密码惊喜对比,如果相同,表示登陆成功,否则失败
         # user_password = sha256(password)
         # if password ==  user_password
-
         # 使用django自带的认证系统
         user = authenticate(username=username, password=password)
         if user is None:
@@ -200,12 +202,10 @@ class LoginView(View):
         if user.is_active is False:
             # 表示用户未激活
             return render(request, 'login.html', {'errmsg': '账户未激活'})
-
         # 登陆成功
         # 记录用户的登陆状态到session中
         # 使用Django的认证系统记录用户登陆
         login(request, user)
-
         # 判断用户是否勾选记录用户名()
         remember = request.POST.get('remember')
         if remember == 'on':
@@ -216,7 +216,6 @@ class LoginView(View):
         else:
             # 关闭浏览器就失效
             request.session.set_expiry(0)
-
         # 从查询字符串中尝试获取next的参数
         # GET 从查询字符串中获取参数
         next_url = request.GET.get('next')
@@ -239,9 +238,10 @@ class LogoutView(View):
         return redirect(reverse('users:login'))
 
 
-# 用户个人中心:收货地址
+# 个人中心:收货地址
 class AddressView(LoginRequiredMixin, View):
     """用户地址"""
+
     def get(self, request):
         """提供地址页面数据"""
         # 判断用户的登陆状态
@@ -287,7 +287,7 @@ class AddressView(LoginRequiredMixin, View):
         mobile = request.POST.get('mobile')
         # 判断全部输入中是否有空
         if not all([receiver_name, new_detail_address, zip_code, mobile]):
-            return render(request, "user_center_site.html",{"address": address, "errmsg": "数据不完整"})
+            return render(request, "user_center_site.html", {"address": address, "errmsg": "数据不完整"})
         # 保存数据到数据库中
         # 方式一:
         # new_address = Address(
@@ -315,34 +315,70 @@ class AddressView(LoginRequiredMixin, View):
         return redirect(reverse('users:address'))
 
 
-class InfoView(LoginRequiredMixin, View):
-    """用户地址"""
-
+# 个人中心:个人信息
+class UsersInfoView(LoginRequiredMixin, View):
+    """用户基本信息"""
     def get(self, request):
-        """提供地址页面数据"""
-        # 判断用户的登陆状态
-        # 如果用户未登陆,则跳转到登陆页面
-        # 如果已经登陆,显示地址信息
-        # 通过系统处理登陆状态
-        # 查询数据库,获取用户的地址信息
-        # 显示在页面上
+        """
+        个人中心:用户个人信息
+        通过LoginRequiredMixin组件装饰器控制用户访问权限
+        如果用户未登陆,则跳转到配置文件中指定的登陆页面
+        如果已登陆,返回用户请求
+        :param request: django生成的请求对象
+        :return: 返回请求模板页面
+        """
+        # 0.生成用户对象,request对象中自带用户对象属性
         user = request.user
-        # 取出数据库中最后更新一条数据
-        # 方式一
-        # Address.objects.filter(user=user).order_by('-update_time')[0]
-        # 方式二
-        # django取第一条
-        # user.address_set.order_by('-update_time')[0]
-        # try:
-        #     # latest方法 取最新一条
-        #     address = user.address_set.latest('update_time')
-        # except Address.DoesNotExist:
+        # 1.查询数据库,获取基本信息（地址联系信息）
+        try:
+            # latest方法 取最新一条
+            address = user.address_set.latest('update_time')
+        except Address.DoesNotExist:
             # 表示数据库中没有这个用户地址数据
-            # address = None
-        # 将地址信息返回到模板页面中
-        return render(request, 'user_center_info.html')
+            address = None
+        # 2.查询浏览历史记录,redis
+        # 获取django_redis提供的redis连接对象,链接数据库default,settings中配置了redis数据库
+        redis_conn = get_redis_connection('default')
+
+        # 用户浏览历史记录在redis中以列表保存,key值为history_num(user.id为不重复数字)
+        redis_history_list = 'history_%s' % user.id
+        """
+        # LRANGE key start stop
+        # 返回列表 key 中指定区间内的元素，区间以偏移量 start 和 stop 指定。
+        # 下标(index)参数 start 和 stop 都以 0 为底，也就是说，以 0 表示列表的第一个元素，以 1 表示列表的第二个元素，以此类推。
+        # 你也可以使用负数下标，以 -1 表示列表的最后一个元素， -2 表示列表的倒数第二个元素，以此类推。
+        # 注意LRANGE命令和编程语言区间函数的区别
+        # 假如你有一个包含一百个元素的列表，对该列表执行 LRANGE list 0 10 ，结果是一个包含11个元素的列表，这表明 stop 下标也在
+        # LRANGE 命令的取值范围之内(闭区间)，这和某些语言的区间函数可能不一致，比如Ruby的 Range.new 、 Array#slice 和Python的 range() 函数。
+        # 超出范围的下标
+        # 超出范围的下标值不会引起错误。
+        # 如果 start 下标比列表的最大下标 end ( LLEN list 减去 1 )还要大，那么 LRANGE 返回一个空列表。
+        # 如果 stop 下标比 end 下标还要大，Redis将 stop 的值设置为 end 。
+        # 通过lrange获取的sku商品的id列表
+        """
+        # 定义sku_id的列表
+        sku_id_list = redis_conn.lrange(redis_history_list, 0, 4)
+
+        # 根据sku_id查询商品信息
+        # select * from df__goods_sku where id in (1,2,3,4)
+        # sku_obj_list = GoodsSKU.objects.filter(id_in=sku_id_list)
+        # 为了保证从数据库查询出的顺序与用户的访问顺序一致,取出sku商品的对象
+        # 定义sku对象的列表
+        sku_obj_list = []
+        # 遍历sku_id列表,获取每个sku_id对象的sku_obj对象,存入到sku_obj_list对象列表中
+        for sku_id in sku_id_list:
+            sku = GoodsSKU.objects.get(id=sku_id)
+            sku_obj_list.append(sku)
+        # 定义模板需要的数据字典
+        context = {
+            'address': address,
+            'skus': sku_obj_list,
+        }
+        # 将数据加载到模板文件中并返回给浏览器
+        return render(request, 'user_center_info.html', context)
 
 
+# 个人中心:所有订单
 class OrderView(LoginRequiredMixin, View):
     def get(self, request):
         user = request.user

@@ -3,8 +3,6 @@ from utils.models import BaseModel
 from users.models import User, Address
 from goods.models import GoodsSKU
 
-# Create your models here.
-
 
 class OrderInfo(BaseModel):
     """订单信息"""

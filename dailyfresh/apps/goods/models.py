@@ -1,6 +1,6 @@
 from django.db import models
 from utils.models import BaseModel
-
+from tinymce.models import HTMLField
 
 class GoodsCategory(BaseModel):
     """商品类别表"""
@@ -20,7 +20,7 @@ class GoodsCategory(BaseModel):
 class Goods(BaseModel):
     """商品SPU表"""
     name = models.CharField(max_length=100, verbose_name="名称")
-    # desc = HTMLField(verbose_name="详细介绍", default="", blank=True)
+    desc = HTMLField(verbose_name="详细介绍", default="", blank=True)
 
     class Meta:
         db_table = "df_goods"

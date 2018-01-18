@@ -20,7 +20,7 @@ urlpatterns = [
     # 用户地址
     url(r'^address$', views.AddressView.as_view(), name="address"),
     # 用户信息
-    url(r'^info$', views.InfoView.as_view(), name="info"),
+    url(r'^info$', views.UsersInfoView.as_view(), name="info"),
     # 全部用户订单
     url(r'^order$', views.OrderView.as_view(), name="order"),
 

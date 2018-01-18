@@ -1,6 +1,12 @@
 from django.contrib import admin
-from goods.models import GoodsCategory,Goods,GoodsSKU,GoodsImage,IndexGoodsBanner,IndexCategoryGoodsBanner,IndexPromotionBanner
-# Register your models here.
+from .models import GoodsCategory
+from .models import Goods
+from .models import GoodsSKU
+from .models import GoodsImage
+from .models import IndexGoodsBanner
+from .models import IndexCategoryGoodsBanner
+from .models import IndexPromotionBanner
+
 
 admin.site.register(GoodsCategory)
 admin.site.register(Goods)

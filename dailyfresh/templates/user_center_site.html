@@ -14,15 +14,17 @@
         <div class="right_content clearfix">
             <h3 class="common_title2">收货地址</h3>
             <div class="site_con">
-                <dl>
-                    <dt>当前地址：</dt>
+                <ul type="font-size:20px text-context:20px">
+                    <h3>当前地址：</h3>
                     {% if address %}
-                        <dd>{{ address.detail_addr }} 邮编：{{ address.zip_code }} （{{ address.receiver_name }}
-                            收） {{ address.receiver_mobile }}</dd>
+                        <li>&nbsp;&nbsp;&nbsp;&nbsp;<span>详细地址：</span>&nbsp;&nbsp;&nbsp;&nbsp;{{ address.detail_addr }}</li>
+                        <li>&nbsp;&nbsp;&nbsp;&nbsp;<span>邮编：</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ address.zip_code }}</li>
+                        <li>&nbsp;&nbsp;&nbsp;&nbsp;<span>收件人：</span>&nbsp;&nbsp;{{ address.receiver_name }}</li>
+                        <li>&nbsp;&nbsp;&nbsp;&nbsp;<span>手机：</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ address.receiver_mobile }}</li>
                     {% else %}
-                        <dd></dd>
+                        <li></li>
                     {% endif %}
-                </dl>
+                </ul>
             </div>
             <h3 class="common_title2">编辑地址</h3>
             <div class="site_con">
