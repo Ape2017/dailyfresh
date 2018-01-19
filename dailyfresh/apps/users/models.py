@@ -8,7 +8,7 @@ from utils.models import BaseModel
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 # 项目配置模块
 from django.conf import settings
-# 常量包,用于导入常量USER_ACTIVE_EXPIRES(用户激活有效期)
+# 常量包,用于导入常量USER_ACTIVE_EXPIRES(用户账户激活邮件链接的有效期)
 from utils import constants
 
 

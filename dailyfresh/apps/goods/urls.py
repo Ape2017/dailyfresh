@@ -1,4 +1,6 @@
+# django核心模块中的url,用于定义用户请求的url
 from django.conf.urls import url
+# 导入当前路径下的views模块 .代表当前路径
 from . import views
 
 urlpatterns = [

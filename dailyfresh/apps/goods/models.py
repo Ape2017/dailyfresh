@@ -1,6 +1,9 @@
-from django.db import models
+from django.db import models # django数据库管理核心模块
+# 自定义的抽象类,主要为字段数据的时间管理,增加时间,最后修改时间
 from utils.models import BaseModel
+# 在字段中添加富文本编辑器,富文本编辑器生成html文档文件存储在数据库中
 from tinymce.models import HTMLField
+
 
 class GoodsCategory(BaseModel):
     """商品类别表"""

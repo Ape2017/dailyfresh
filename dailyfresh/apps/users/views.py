@@ -1,35 +1,39 @@
-import re  # 正则匹配模块 校验邮箱时使用
+"""用户管理应用的视图模块,
+作用是根据不同的url模式作用数据库中的数据后返回给浏览器不同的html文件
+"""
+# 正则匹配模块 校验用户输入的邮箱有效性时使用
+import re
 # 返回http页面
 from django.http import HttpResponse
-# ***反向解析***
+# reverse逆向解析方法,参数为一个字典{模块命名空间:请求url的name} 返回一个url地址
 from django.core.urlresolvers import reverse
 # 返回render(渲染页面)和redirect(重定向)路径
 from django.shortcuts import render, redirect
 # 视图类处理用户请求,比视图函数强
 from django.views.generic import View
-# 用户模型类,地址
-from users.models import User, Address
+# 用户模型类,地址,.models代表当前路径下的models模块
+from .models import User, Address
 # django数据库包异常信息,数据重复,字段内设置了唯一
 from django.db import IntegrityError
-# Django发送邮件包
+# send_mail为Django系统调用邮件服务器发送邮件的方法
 from django.core.mail import send_mail
-# 生成签名(序列化)
+# 生成签名(序列化),as为起别名
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, SignatureExpired
-# constants常量模块
+# constants常量模块,导入的是用户激活邮件链接的有效期
 from utils import constants
 # 系统配置文件
 from django.conf import settings
-# 通过委托发送邮件 celery(分布式任务队列)
+# 通过委托发送邮件 celery(分布式任务队列)服务器发送激活邮件
 from celery_task.tasks import send_active_email
 # 系统自带用户认证组件,认证(校验用户名和密码),登录,退出,
 from django.contrib.auth import authenticate, login, logout
-# 系统校验用户是否是登陆状态
+# 系统校验用户是否是登陆状态,通过login_required装饰器装饰,若登陆,访问请求数据,未登录,重定向到指定的url
 from django.contrib.auth.decorators import login_required
 # 自定义组件,进行访问权限校验,若是已登陆,访问请求页面,若未登陆,重定向到登陆页面
 from utils.commons import LoginRequiredMixin
-# get_redis_connection操作redis数据库
+# get_redis_connection操作redis数据库,用于获取用户浏览商品的历史记录
 from django_redis import get_redis_connection
-# GoodsSKU商品模型类
+# goods应用下的GoodsSKU商品模型类
 from goods.models import GoodsSKU
 
 
@@ -44,7 +48,7 @@ class RegisterView(View):
     def post(self, request):
         """
         对应post请求方式的业务逻辑处理
-        :param (参数0) request: 用户请求数据
+        :param (参数0) request: 用户请求的对象
         :return(返回值2): 返回response数据
         """
         # 1.1.获取用户输入的数据: 用户名,密码,确认密码,邮箱,是否同意协议
@@ -162,10 +166,53 @@ class LoginView(View):
     # get方式请求的url有:
     # 1./users/login?next=/users/address
     # 2./users/login
-    # requestGET模式:从查询字符串中获取参数
-    # requestPOST模式:从请求体中获取参数
+    # request对象的GET属性:从查询字符串中获取参数(url)
+    # request对象的POST属性:从请求体中获取参数
     def get(self, request):
         """对应get请求方式的逻辑"""
+        scheme1 = request.scheme
+        print('scheme属性为:', end='')
+        print(scheme1)
+        body1 = request.body
+        print('body属性为:', end='' )
+        print(body1)
+        path1 = request.path
+        print('path属性为:', end='' )
+        print(path1)
+        path_info1 = request.path_info
+        print('path_info属性为:', end='')
+        print(path_info1)
+        method1 = request.method
+        print('method属性为:', end='')
+        print(method1)
+        encoding1 = request.encoding
+        print('encoding属性为:', end='')
+        print(encoding1)
+        GET1 = request.GET
+        print('GET属性为:', end='')
+        print(GET1)
+        POST1 = request.POST
+        print('POST属性为:', end='')
+        print(POST1)
+        COOKIES1 = request.COOKIES
+        print('COOKIES属性为:', end='')
+        print(COOKIES1)
+        FILES1 = request.FILES
+        print('FILES属性为:', end='')
+        print(FILES1)
+        META1 = request.META
+        print('META属性为:', end='')
+        print(META1)
+        user1 = request.user
+        print('user属性为:', end='')
+        print(user1)
+        session1 = request.session
+        print('session属性为:', end='')
+        print(session1)
+        resolver_match1 = request.resolver_match
+        print('resolver_match属性为:', end='')
+        print(resolver_match1)
+        
         return render(request, "login.html")
 
     def post(self, request):
@@ -176,6 +223,49 @@ class LoginView(View):
         """
         # 1.1.获取用户输入的数据: 用户名,密码
         # POST从请求体获取数据
+        scheme1 = request.scheme
+        print('scheme属性为:', end='')
+        print(scheme1)
+        body1 = request.body
+        print('body属性为:', end='')
+        print(body1)
+        path1 = request.path
+        print('path属性为:', end='')
+        print(path1)
+        path_info1 = request.path_info
+        print('path_info属性为:', end='')
+        print(path_info1)
+        method1 = request.method
+        print('method属性为:', end='')
+        print(method1)
+        encoding1 = request.encoding
+        print('encoding属性为:', end='')
+        print(encoding1)
+        GET1 = request.GET
+        print('GET属性为:', end='')
+        print(GET1)
+        POST1 = request.POST
+        print('POST属性为:', end='')
+        print(POST1)
+        COOKIES1 = request.COOKIES
+        print('COOKIES属性为:', end='')
+        print(COOKIES1)
+        FILES1 = request.FILES
+        print('FILES属性为:', end='')
+        print(FILES1)
+        META1 = request.META
+        print('META属性为:', end='')
+        print(META1)
+        user1 = request.user
+        print('user属性为:', end='')
+        print(user1)
+        session1 = request.session
+        print('session属性为:', end='')
+        print(session1)
+        resolver_match1 = request.resolver_match
+        print('resolver_match属性为:', end='')
+        print(resolver_match1)
+
         username = request.POST.get('username')
         password = request.POST.get('pwd')
         # 1.2.参数校验
@@ -218,6 +308,7 @@ class LoginView(View):
             request.session.set_expiry(0)
         # 从查询字符串中尝试获取next的参数
         # GET 从查询字符串中获取参数
+        #
         next_url = request.GET.get('next')
         if next_url is None:
             next_url = reverse('goods:index')

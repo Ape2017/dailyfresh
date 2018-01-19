@@ -1,6 +1,11 @@
+"""订单管理模型模块,用于定义订单在数据库中存储的表"""
+# models django数据库管理核心模块
 from django.db import models
+# 其他模型模块,主要在每个字段中添加创建时间和修改时间字段
 from utils.models import BaseModel
+# 户管理模型模块,User为用户类,Address为地址类
 from users.models import User, Address
+# 商品模型模块中的商品sku模型
 from goods.models import GoodsSKU
 
 

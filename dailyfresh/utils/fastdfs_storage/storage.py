@@ -1,7 +1,29 @@
-from django.core.files.storage import Storage # Storage django系统自带的文件存储仓库
-# Fdfs 分布式快速文件管理系统
+"""
+FastDFS是一个开源的轻量级分布式文件系统。
+它解决了大数据量存储和负载均衡等问题。
+特别适合以中小文件（建议范围：4KB< file_size <500MB）
+为载体的在线服务，如相册网站、视频网站等等。
+系统组成有:FastDFS只有两个角色：Tracker server和Storage server。
+Tracker server作为中心结点，其主要作用是负载均衡和调度。
+Tracker server在内存中记录分组和Storage server的状态等信息，不记录文件索引信息，占用的内存量很少。
+另外，客户端（应用）和Storage server访问Tracker server时，Tracker server扫描内存中的分组和Storage server信息，然后给出应答。
+由此可以看出Tracker server非常轻量化，不会成为系统瓶颈。
+FastDFS中的Storage server在其他文件系统中通常称作Trunk server或Dataserver。
+Storage server直接利用OS的文件系统存储文件。
+FastDFS不会对文件进行分块存储，客户端上传的文件和Storage server上的文件一一对应。
+
+Nginx为反向代理服务器:
+在管理员上传文件到fastDFS文件存储服务器后,nginx会自动将图片资源缓存到自身服务器中,
+在用户请求时,通过模板文件中的函数自动访问nginx服务器的地址下载图片.
+
+FastDFS + Nginx 可以很好的管理静态资源
+"""
+# Storage django系统自带的文件存储仓库
+from django.core.files.storage import Storage
+# Fdfs分布式快速文件管理系统的Python实现包
 from fdfs_client.client import Fdfs_client
-# 系统配置
+# FASTDFS_CLIENT_CONF:快速分布式文件管理系统客户端的配置路径
+# FASTDFS_NGINX_URL:反向代理服务器的url地址
 from dailyfresh import settings
 
 
@@ -31,7 +53,7 @@ class FastDFSStorage(Storage):
         保存文件的时候,被调用,如何存储文件,代码在此实现
         :param name: 文件名
         :param content: 传送过来的文件对象,即要保存的文件对象
-        :return:
+        :return: 文件存储id字符串
         """
         # 创建fastdfs客户端
         client = Fdfs_client(self.client_conf)
@@ -40,12 +62,18 @@ class FastDFSStorage(Storage):
 
         # 利用客户端保存文件到fastdfs服务器中的Storage服务器,返回的是一个文件相关字典
         # ret是字典,内容为{
-        # 'Group name' : group_name,  # storage存储服务器的组名
-        # 'Remote file_id' : remote_file_id, # 文件名字,唯一
-        # 'Status' : 'Upload successed.',   # 上传状态:成功
-        # 'Local file name' : '',       # 本地文件名
+        # 'Group name'是文件存储在Storage存储服务器的组名
+        # 'Group name' : group_name,
+        # 'Remote file_id'文件在服务器中的文件名,包含访问服务器路径
+        # 'Remote file_id' : remote_file_id,
+        # 'Status' : 上传状态:成功
+        # 'Status' : 'Upload successed.',
+        # 'Local file name' :本地文件名
+        # 'Local file name' : '',
+        # 'Uploaded size' : 上传文件大小
         # 'Uploaded size' : upload_size, #上传文件大小
-        # 'Storage IP' : storage_ip } # 存储的ip地址
+        # 'Storage IP'文件存储服务器的ip地址
+        # 'Storage IP' : storage_ip }
         ret = client.upload_by_buffer(file_data)
         # 获取上传状态
         status = ret.get("Status")
