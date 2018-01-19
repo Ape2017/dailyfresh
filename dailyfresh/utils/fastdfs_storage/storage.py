@@ -26,6 +26,29 @@ from fdfs_client.client import Fdfs_client
 # FASTDFS_NGINX_URL:反向代理服务器的url地址
 from dailyfresh import settings
 
+# fastDFS服务器配置文件修改:
+# 主机地址用命令ifconfig查看,不要写localhost和127.0.0.1
+# 1.将/etc/fdfs目录下的storage.conf配置文件中的第118行tracker_server的主机地址改为自己实际的主机地址
+# 2.将/etc/fdfs目录下的mod_fastdfs.conf配置文件中的第40行tracker_server的主机地址改为自己实际的主机地址
+# 3.将/etc/fdfs目录下的client.conf配置文件中的第14行tracker_server的主机地址改为自己实际的主机地址
+# Nginx服务器的配置文件修改
+# # 3.将/usr/local/nginx/conf目录下的nginx.conf配置文件中的第14行tracker_server的主机地址改为自己实际的主机地址
+# server
+# { listen 8888;
+#   server_name localhost;
+#   location ~ / group[0 - 9] / {
+#   ngx_fastdfs_module;
+
+# 启动
+# fastDFS服务器和nginx服务器
+# 1.启动tracker服务器: sudo service fdfs_trackerd start
+# 2.启动storage服务器: sudo service fdfs_storaged start
+# 3.启动Nginx服务器: sudo /usr/local/nginx/sbin/nginx
+# 测试:
+# 命令: fdfs_upload_file 客户端的配置文件路径 文件地址
+# 如:  fdfs_upload_file /etc/fdfs/client.conf ./fruit.jpg
+# 返回: group1/M00/00/00/wKg-glph_FuAOYR6AABtR_KnVbE877.jpg
+
 
 class FastDFSStorage(Storage):
     """自定义文件存储系统"""
