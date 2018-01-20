@@ -7,7 +7,7 @@ from django.shortcuts import redirect
 # 视图核心函数,将用户请求数据加载到模板返回到浏览器
 from django.shortcuts import render
 # 商品类别表
-from dailyfresh import settings
+
 from .models import GoodsCategory
 # 商品SPU表
 from .models import Goods
@@ -21,8 +21,11 @@ from .models import IndexGoodsBanner
 from .models import IndexCategoryGoodsBanner
 # 主页促销活动展示
 from .models import IndexPromotionBanner
-
-
+# 缓存
+from django.core.cache import cache
+from dailyfresh import settings
+# 首页缓存有效期
+from utils.constants import INDEX_DATA_CACHE
 # 主页视图
 class IndexView(View):
     """主页视图"""
@@ -73,8 +76,42 @@ class IndexView(View):
             # 3.在Celery处理admin站点保存请求的时候,执行生成静态页面的任务
             # 4.将生成的静态页面保存到fastDFS服务器中(Nginx)
             # 5.将地址返回到Django中
-        url = settings.FASTDFS_NGINX_URL+'stctic/index.html'
-        return redirect(url)
+        # 方法三:采用缓存机制 redis
+        # 尝试从缓存中获取数据
+        context = cache.get('index_data')
+
+        if context is None:
+            # 商品的品类
+            categories = GoodsCategory.objects.all()
+            # 首页轮播图
+            index_goods_banners = IndexGoodsBanner.objects.all()[:4]
+            # 首页广告活动数据,[]切片,限制数量
+            promotion_banners = IndexPromotionBanner.objects.all()[:2]
+            # 首页分类商品展示数据
+            for category in categories:
+                category_goods_title_banners = IndexCategoryGoodsBanner.objects.filter(category=category,
+                display_type = 0).order_by(category.index)[:5]
+                category.title_banners = category_goods_title_banners
+                category_goods_image_banners = IndexCategoryGoodsBanner.objects.filter(category=category,
+                display_type = 1).order_by(category.index)[:4]
+                category.image_banners = category_goods_image_banners
+            # 购物车数量
+            # cart_num = 0
+            # 模板的数据
+            context = {
+                'categories': categories,
+                'index_goods_banners': index_goods_banners,
+                'promotion_banners': promotion_banners,
+                # 'cart_num': cart_num,
+            }
+            # 使用django的cache工具保存缓存数据
+            # cache.set(名字,数据,有效期)
+
+            cache.set( 'index_data',context,INDEX_DATA_CACHE)
+
+        return render(request, 'index.html', context)
+
+
 
 
 # 商品列表
