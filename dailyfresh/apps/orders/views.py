@@ -7,8 +7,13 @@ from django.views.generic import View
 from utils.commons import LoginRequiredMixin
 
 
-class POrder(LoginRequiredMixin, View):
+class POrderView(LoginRequiredMixin, View):
     def get(self, request):
         return render(request, 'place_order.html')
 
 
+# 个人中心:所有订单
+class OrderView(LoginRequiredMixin, View):
+    def get(self, request):
+        user = request.user
+        return render(request, 'user_center_order.html')

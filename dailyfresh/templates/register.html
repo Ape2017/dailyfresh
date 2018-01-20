@@ -30,7 +30,7 @@
 						<label>用户名:</label>
 						<input type="text" name="user_name" id="user_name">
 						<span class="error_tip">提示信息</span>
-					</li>					
+					</li>
 					<li>
 						<label>密码:</label>
 						<input type="password" name="pwd" id="pwd">
@@ -54,10 +54,9 @@
 					<li class="reg_sub">
 						<input type="submit" value="注 册" name="">
 					</li>
-				</ul>				
+                    {{ errmsg }}
+				</ul>
 				</form>
-                {{ errmsg }}
-
 			</div>
 
 		</div>
@@ -72,11 +71,11 @@
 			<span>|</span>
 			<a href="#">招聘人才</a>
 			<span>|</span>
-			<a href="#">友情链接</a>		
+			<a href="#">友情链接</a>
 		</div>
 		<p>CopyRight © 2016 北京天天生鲜信息技术有限公司 All Rights Reserved</p>
 		<p>电话：010-****888    京ICP备*******8号</p>
 	</div>
-	
+
 </body>
 </html>

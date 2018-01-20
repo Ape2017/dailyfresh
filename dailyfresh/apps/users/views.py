@@ -300,7 +300,7 @@ class LoginView(View):
         remember = request.POST.get('remember')
         if remember == 'on':
             # 表示用户勾选了用户名
-            # None表示Django默认的有效期 两周
+            # None表示Django中默认的有效期 两周
             # 传入秒数 表示失效期
             request.session.set_expiry(None)
         else:
@@ -469,8 +469,4 @@ class UsersInfoView(LoginRequiredMixin, View):
         return render(request, 'user_center_info.html', context)
 
 
-# 个人中心:所有订单
-class OrderView(LoginRequiredMixin, View):
-    def get(self, request):
-        user = request.user
-        return render(request, 'user_center_order.html')
+

@@ -9,7 +9,7 @@ urlpatterns = [
     url(r"^index$", views.IndexView.as_view(), name="index"),
     # sdu清单
     url(r"^list$", views.ListView.as_view(), name="list"),
-    # 详情页
-    url(r"^detail$", views.DetailView.as_view(), name="detail"),
+    # 详情页(?P<sku_id>\d+)中?P<sku_id>表示起别名 \d+表示数字
+    url(r"^detail/(?P<sku_id>\d+)$", views.DetailView.as_view(), name="detail"),
 
 ]

@@ -56,8 +56,8 @@
             <ul class="goods_list fl">
                 {% for banner in category.image_banners %}
                 <li>
-                    <h4><a href="#">{{ banner.sku.name }}</a></h4>
-                    <a href="#"><img src="{{ banner.sku.default_image }}"></a>
+                    <h4><a href="{% url 'goods:detail' banner.sku.id %}">{{ banner.sku.name }}</a></h4>
+                    <a href="{% url 'goods:detail' banner.sku.id %}"><img src="{{ banner.sku.default_image.url }}"></a>
                     <div class="prize">¥ {{ banner.sku.price }}</div>
                 </li>
                 {% endfor %}

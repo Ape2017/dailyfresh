@@ -110,7 +110,7 @@ ROOT_URLCONF = 'dailyfresh.urls'
 # 默认:: []（空列表）
 # Django的模板使用一个列表来进行配置。列表中每一项都是一个字典类型数据，可以配置模板不同的功能。
 TEMPLATES = [
-    {   # BACKEND 默认值：未定义
+    {  # BACKEND 默认值：未定义
         # 要使用的模板后端
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         # DIRS 默认设置： [] (空列表)
@@ -315,7 +315,7 @@ LOGIN_URL = "/users/login"
 FASTDFS_CLIENT_CONF = os.path.join(BASE_DIR, 'utils/fastdfs_storage/client.conf')
 
 # FastDFS文件存储服务器中的ngnix反向代理服务器的访问路径
-FASTDFS_NGINX_URL = "http://10.211.55.5:8888/"
+FASTDFS_NGINX_URL = "http://192.168.62.130:8888/"
 
 # 注册django使用的默认文件存储系统
 DEFAULT_FILE_STORAGE = "utils.fastdfs_storage.storage.FastDFSStorage"

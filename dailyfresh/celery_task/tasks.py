@@ -63,11 +63,13 @@ def generate_static_index_html():
     promotion_banners = IndexPromotionBanner.objects.all()[:2]
     # 首页分类商品展示数据
     for category in categories:
-        category_goods_title_banners = IndexCategoryGoodsBanner.objects.filter(category=category,
-                                                                               display_type=0).order_by(category.index)[:5]
+        category_goods_title_banners = IndexCategoryGoodsBanner\
+                                        .objects.filter(category=category,display_type=0)\
+                                        .order_by('index')[:5]
         category.title_banners = category_goods_title_banners
-        category_goods_image_banners = IndexCategoryGoodsBanner.objects.filter(category=category,
-                                                                               display_type=1).order_by(category.index)[:4]
+        category_goods_image_banners = IndexCategoryGoodsBanner\
+                                        .objects.filter(category=category,display_type=1)\
+                                        .order_by(category.index)[:4]
         category.image_banners = category_goods_image_banners
         # print只接受字符串,当传入对象时,对象会先去调用__str__方法,返回字符串
         print(category.title_banners)
