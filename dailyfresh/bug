@@ -1,0 +1,72 @@
+进行了数据库的查询
+商品的分类
+[<GoodsCategory: 儿时的回忆>,
+<GoodsCategory: 热带雨林鱼>,
+<GoodsCategory: 烟火缭绕>,
+<GoodsCategory: 忧伤的蛋蛋>,
+<GoodsCategory: 来点绿色>,
+<GoodsCategory: 与火之歌>]
+幻灯片图
+[<IndexGoodsBanner: 葡萄>,
+ <IndexGoodsBanner: 奇异果>,
+  <IndexGoodsBanner: 猪肉>,
+  <IndexGoodsBanner: 大青虾>]
+广告
+[<IndexPromotionBanner: 盛夏尝鲜季>,
+ <IndexPromotionBanner: 吃货暑假趴>]
+首页分类商品中展示的商品名称
+[<IndexCategoryGoodsBanner: 葡萄>,
+<IndexCategoryGoodsBanner: 盒装草莓>]
+首页分类商品中展示的商品名称
+[<IndexCategoryGoodsBanner: 草莓 500g>,
+ <IndexCategoryGoodsBanner: 葡萄>,
+ <IndexCategoryGoodsBanner: 奇异果>,
+  <IndexCategoryGoodsBanner: 柠檬>]
+首页分类商品中展示的商品名称
+[<IndexCategoryGoodsBanner: 扇贝>,
+<IndexCategoryGoodsBanner: 基围虾>]
+首页分类商品中展示的商品名称
+[<IndexCategoryGoodsBanner: 大青虾>,
+<IndexCategoryGoodsBanner: 北海道秋刀鱼>,
+<IndexCategoryGoodsBanner: 北海道秋刀鱼>,
+<IndexCategoryGoodsBanner: 扇贝>]
+首页分类商品中展示的商品名称
+[<IndexCategoryGoodsBanner: 羊肉>,
+ <IndexCategoryGoodsBanner: 牛肉>]
+首页分类商品中展示的商品名称
+[<IndexCategoryGoodsBanner: 猪肉>,
+<IndexCategoryGoodsBanner: 牛肉>,
+<IndexCategoryGoodsBanner: 羊肉>,
+<IndexCategoryGoodsBanner: 牛排>]
+首页分类商品中展示的商品名称
+[<IndexCategoryGoodsBanner: 鸡肉>]
+首页分类商品中展示的商品名称
+[<IndexCategoryGoodsBanner: 盒装鸡蛋>,
+<IndexCategoryGoodsBanner: 鸡肉>,
+<IndexCategoryGoodsBanner: 鸭蛋>,
+<IndexCategoryGoodsBanner: 鸡腿>]
+首页分类商品中展示的商品名称
+[<IndexCategoryGoodsBanner: 冬瓜>]
+首页分类商品中展示的商品名称
+[<IndexCategoryGoodsBanner: 白菜>,
+ <IndexCategoryGoodsBanner: 芹菜>,
+ <IndexCategoryGoodsBanner: 香菜>,
+ <IndexCategoryGoodsBanner: 冬瓜>]
+首页分类商品中展示的商品名称
+[<IndexCategoryGoodsBanner: 蟹棒>,
+<IndexCategoryGoodsBanner: 鱼丸>]
+首页分类商品中展示的商品名称
+[<IndexCategoryGoodsBanner: 鱼丸>,
+ <IndexCategoryGoodsBanner: 蟹棒>,
+ <IndexCategoryGoodsBanner: 虾丸>,
+  <IndexCategoryGoodsBanner: 速冻水饺>]
+购物车数量
+0
+组合后的模板数据
+{
+'categories':    [<GoodsCategory: 儿时的回忆>, <GoodsCategory: 热带雨林鱼>,<GoodsCategory: 烟火缭绕>,
+                 <GoodsCategory: 忧伤的蛋蛋>,<GoodsCategory: 来点绿色>, <GoodsCategory: 与火之歌>],
+'promotion_banners': [<IndexPromotionBanner: 盛夏尝鲜季>, <IndexPromotionBanner: 吃货暑假趴>],
+'index_goods_banners': [<IndexGoodsBanner: 葡萄>, <IndexGoodsBanner: 奇异果>, <IndexGoodsBanner: 猪肉>, <IndexGoodsBanner: 大青虾>],
+ 'cart_num': 0
+ }

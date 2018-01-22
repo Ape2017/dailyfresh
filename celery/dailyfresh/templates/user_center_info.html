@@ -1,0 +1,129 @@
+{% extends "user_center_base.html" %}
+{% load staticfiles %}
+{% block body %}
+	<div class="main_con clearfix">
+		<div class="left_menu_con clearfix">
+			<h3>用户中心</h3>
+			<ul>
+				<li><a href="{% url 'users:info' %}" class="active">· 个人信息</a></li>
+				<li><a href="{% url 'users:order' %}">· 全部订单</a></li>
+				<li><a href="{% url 'users:address' %}">· 收货地址</a></li>
+			</ul>
+		</div>
+		<div class="right_content clearfix">
+				<div class="info_con clearfix">
+				<h3 class="common_title2">基本信息</h3>
+						<ul class="user_info_list">
+							{% if address %}
+							<li><span>用户名：</span>{{ address.receiver_name }}</li>
+							<li><span>联系方式：</span>{{ address.receiver_mobile }}</li>
+							<li><span>联系地址：</span>{{ address.detail_addr }}</li>
+							{% endif %}
+						</ul>
+				</div>
+				
+				<h3 class="common_title2">最近浏览</h3>
+				<div class="has_view_list">
+					<ul class="goods_type_list clearfix">
+                        {% for sku in skus %}
+				<li>
+					<a href="{% url 'goods:index' %}"><img src="{{ sku.default_image.url }}"></a>
+					<h4><a href="detail.html">{{ sku.name }}</a></h4>
+					<div class="operate">
+						<span class="prize">￥{{ sku.price }}</span>
+						<span class="unit">{{ sku.price }}/{{ sku.unit }}</span>
+{#						<a href="javascript" class="add_goods" title="加入购物车"></a>#}
+                        <a href="javascript:;" class="add_cart" sku_id="{{ sku.id }}" id="add_cart">加入购物车</a>
+					</div>
+				</li>
+					{% endfor %}
+			</ul>
+		</div>
+		</div>
+	</div>
+{% endblock %}
+
+
+{% block bottom %}
+	<div class="add_jump"></div>
+	<script type="text/javascript" src="{% static 'js/slide.js' %}"></script>
+	<script type="text/javascript">
+		$("#tag_detail").click(function(){
+			$("#tag_comment").removeClass("active");
+			$(this).addClass("active");
+			$("#tab_comment").hide();
+			$("#tab_detail").show();
+		});
+
+		$("#tag_comment").click(function(){
+			$("#tag_detail").removeClass("active");
+			$(this).addClass("active");
+			$("#tab_detail").hide();
+			$("#tab_comment").show();
+		});
+
+		var $add_x = $('#add_cart').offset().top;
+		var $add_y = $('#add_cart').offset().left;
+
+		var $to_x = $('#show_count').offset().top;
+		var $to_y = $('#show_count').offset().left;
+
+		$(".add_jump").css({'left':$add_y+80,'top':$add_x+10,'display':'block'})
+
+		$("#add_cart").click(function () {
+            // 向后端视图发送请求，让后端保存购物车数据
+            // attr(属性名，属性值) 设置
+            // attr(属性名） 获取
+            var data = {
+                sku_id: $(this).attr("sku_id"),
+                sku_count: $("#num_show").val(),
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            };
+            $.post("/carts/add", data, function (resp) {
+                // resp 是被ajax解析json字符串执行后的对象（字典）
+                // resp.code
+                // resp.errmsg
+                if (resp.code == 0) {
+                    // 后端保存购物车数据成功
+                    $(".add_jump").stop().animate({
+                            'left': $to_y + 7,
+                            'top': $to_x + 7
+                        },
+                        "fast", function () {
+                            $(".add_jump").fadeOut('fast', function () {
+                                $('#show_count').html(resp.cart_num);
+                            });
+                        });
+
+                } else {
+                    alert(resp.errmsg);
+                }
+            }, 'json')
+        });
+
+		$("#add").click(function () {
+			var num_show = $("#num_show").val();
+			num_show = parseInt(num_show)
+			num_show += 1;
+			$("#num_show").val(num_show);
+			var price = $(".show_pirze>em").html()
+			price = parseFloat(price);
+			var total = price * num_show;
+			$(".total>em").html(total.toFixed(2));
+		});
+		$("#minus").click(function () {
+			var num_show = $("#num_show").val();
+			num_show = parseInt(num_show)
+			num_show -= 1;
+			if (num_show < 1) {
+				num_show = 1;
+			}
+			$("#num_show").val(num_show);
+			var price = $(".show_pirze>em").html()
+			price = parseFloat(price);
+			var total = price * num_show;
+			$(".total>em").html(total.toFixed(2));
+		});
+	</script>
+{% endblock %}
+

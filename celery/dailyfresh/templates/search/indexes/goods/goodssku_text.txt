@@ -1,0 +1,3 @@
+# 指明在模型类中搜索的字段
+{{ object.name }}
+{{ object.title }}

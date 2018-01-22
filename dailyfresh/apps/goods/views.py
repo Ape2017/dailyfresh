@@ -3,6 +3,16 @@
     1.处理用户的url请求
     2.操作数据库,对数据库进行增删改查
     3.获取数据后加载到模板文件返回到浏览器
+视图类的逻辑处理思路:
+    1.分析用户行为,判断请求方式
+    2.通过请求模式,判断返回的html页面
+    3.分析html页面,提取返回数据
+    4.根据提取出的数据,结合html页面生成模板文件
+    5.获取用户请求的参数
+    6.校验参数的有效性
+    6.查询数据库
+    7.数据处理
+    8.返回数据
 """
 from django.views.generic import View  # View类视图基础类,用户自定义类视图都是继承此类
 # reverse通过逆向解析字典{模块命名空间:具体请求的 url name} 返回值url
@@ -90,9 +100,8 @@ class BaseCartView(View):
 # 主页视图
 class IndexView(BaseCartView):
     """主页视图"""
-
+    # /index
     def get(self, request):
-
         # 方法一:不使用页面静态化处理和缓存机制,直接将数据库中查询到的数据加载到模板中返回给浏览器
         # 缺点:1.导致用户每一次请求都会操作数据库,会加大数据库服务器的压力
         #     2.数据库压力过大会导致响应用户请求慢,导致用户体验差
@@ -142,7 +151,6 @@ class IndexView(BaseCartView):
         #   }
         # return render(request, 'index.html', context)
 
-
         # 方法二:采用页面静态化处理,将低频数据的动态页面转化为静态页面存储到Nginx服务
         # 优点:能够优化用户访问时间和降低数据库操作
         # 缺点:用户访问高频数据或个性化数据时,还是要大量操作数据库,会导致数据库压力
@@ -159,53 +167,66 @@ class IndexView(BaseCartView):
         #       4.修改对应的Nginx服务器的配置文件,并且启动服务器
         #       5.celery执行任务生成静态页面存储到指定的路径下(在celery_task/task.py中)
 
-
         # 方法三:采用缓存机制 redis
         # 优点:将高频常用数据加入到缓存中后,能够提高用户体验
         # 缺点:缓存如果没有设置有效期,将会导致缓存和数据库的数据不同步
         # context尝试从缓存中获取缓存数据
         context = cache.get('index_data')
+        print('缓存的数据')
+        print(context)
         # 判断缓存是否存在
         if context is None:
-            # 没有缓存数据,需要查询数据库
+            # 没有缓存数据，需要查询数据库
+            print("进行了数据库的查询")
             # 商品的品类
             categories = GoodsCategory.objects.all()
+            print('商品的分类')
+            print(categories)
             # 首页轮播图
             index_goods_banners = IndexGoodsBanner.objects.all().order_by("index")[:4]
+            print('幻灯片图')
+            print(index_goods_banners)
             # 首页广告活动数据,[]切片,限制数量
             promotion_banners = IndexPromotionBanner.objects.all().order_by("index")[:2]
+            # 广告图片
+            print('广告')
+            print(promotion_banners)
             # 首页分类商品展示数据
             for category in categories:
-                category_goods_title_banners = IndexCategoryGoodsBanner.objects.filter(category=category,
-                                                                                       display_type=0).order_by(
-                    'index')[:5]
+                category_goods_title_banners = \
+                    IndexCategoryGoodsBanner.objects.filter(category=category,display_type=0).order_by('index')[:5]
                 # python的特性：可以向对象中添加新的属性，通过属性赋值的方式
                 # 在title_banners对象中增加image_banners属性
                 category.title_banners = category_goods_title_banners
-                category_goods_image_banners = IndexCategoryGoodsBanner.objects.filter(category=category,
-                                                                                       display_type=1).order_by(
-                    'index')[:4]
+                print('首页分类商品中展示的商品名称')
+                print(category_goods_title_banners)
+                category_goods_image_banners = \
+                    IndexCategoryGoodsBanner.objects.filter(category=category,display_type=1).order_by('index')[:4]
                 # 在category对象中增加image_banners属性
                 # python的特性：可以向对象中添加新的属性，通过属性赋值的方式
                 category.image_banners = category_goods_image_banners
+                print('首页分类商品中展示的商品名称')
+                print(category_goods_image_banners)
+
             # 购物车数量
-            # cart_num = 0
+            cart_num = self.get_cart_num(request)
+            print('购物车数量')
+            print(cart_num)
+
             # 模板的数据
             context = {
+                'cart_num': cart_num,
                 'categories': categories,
                 'index_goods_banners': index_goods_banners,
                 'promotion_banners': promotion_banners,
             }
-
+            print('组合后的模板数据')
+            print(context)
             # 使用django的cache工具保存缓存数据
             # cache.set(名字,数据,有效期)
             cache.set('index_data', context, INDEX_DATA_CACHE)
 
-        # 购物车数量
-        cart_num = self.get_cart_num(request)
-
-        context['cart_num'] = cart_num
-
+        # 数据加载到模板,生成html,返回到浏览器
         return render(request, 'index.html', context)
 
 
@@ -247,11 +268,11 @@ class DetailView(BaseCartView):
                 'new_skus': new_skus,
                 'order_goods_list': order_goods_list,
             }
-            cache.set('detail_%s' % sku_id, context, DETAIL_DATA_CACHE_EXPIRES)
             # 购物车数据
             cart_num = self.get_cart_num(request)
             context['cart_num'] = cart_num
-
+            # 将数据保存到缓存中
+            cache.set('detail_%s' % sku_id, context, DETAIL_DATA_CACHE_EXPIRES)
             # 保存用户浏览记录
             # 获取用户对象
             user = request.user
@@ -271,19 +292,26 @@ class DetailView(BaseCartView):
         return render(request, 'detail.html', context)
 
 
-# url 定义GET/list/(category_id)/(page)?sort = xxxx
+# 分类商品列表
 class ListView(BaseCartView):
     """商品spu列表"""
-
+    # url 定义GET/list/(category_id)/(page)?sort = xxxx
     def get(self, request, category_id, page):
         """提供页面 商品类别、排序、页数"""
         # 尝试获取缓存数据
         context = cache.get("'category_%s' % category_id")
         # 如果缓存不存在
         if context is None:
-            # 获取参数
-            sort = request.GET('sort', 'default')
-            # 校验参数
+            # 1.设置排序参数
+            # 其中get为Python字典中的get函数
+            # Python 字典(Dictionary) get() 函数返回指定键的值，如果值不在字典中返回默认值。
+            # get语法:dict.get(key, default=None)
+            # 参数1:key -- 字典中要查找的键。
+            # 参数2:default关键字参数 -- 如果指定键的值不存在时，返回该默认值值。
+            # 返回值:返回指定键的值，如果值不在字典中返回默认值None。
+            # 设置排序参数,下面会使用,自定义为default,
+            sort = request.GET.get('sort', 'default')
+            # 2.校验参数的合法性
             # 判断类别是否存在
             try:
                 category = GoodsCategory.objects.get(id=category_id)
@@ -298,15 +326,15 @@ class ListView(BaseCartView):
             new_skus = GoodsSKU.objects.filter(category=category).order_by('-create_time')[:2]
             # 获取商品列表数据
             if sort == 'price':
-                skus = GoodsCategory.objects.filter(category=category).order_by('price')
+                skus = GoodsSKU.objects.filter(category=category).order_by('price')
             elif sort == 'hot':
-                skus = GoodsCategory.objects.filter(category=category).order_by('-sales')
+                skus = GoodsSKU.objects.filter(category=category).order_by('-sales')
             else:
-                skus = GoodsCategory.objects.filter(category=category).order_by('create_time')
+                skus = GoodsSKU.objects.filter(category=category).order_by("-create_time")
             # 分页器
             # 创建分页器对象paginator
             # paginator = Paginator(要进行分页处理的所有数据,每页数量)
-            paginator = Paginator(skus, 2)
+            paginator = Paginator(skus, 1)
 
             # 获取当前页的数据,前端传过来的page数据是字符串
             page = int(page)

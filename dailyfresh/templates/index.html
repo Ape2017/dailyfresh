@@ -1,7 +1,5 @@
 {% extends "base.html" %}
 {% block title %} 天天生鲜-首页 {% endblock %}
-
-
 {% block body %}
 	<div class="navbar_con">
 		<div class="navbar">
@@ -19,13 +17,13 @@
 	<div class="center_con clearfix">
 		<ul class="subnav fl">
 			{% for category in categories %}
-			<li><a href="#model01" class="{{ category.logo }}">{{ category.name }}</a></li>
+			<li><a href="#model0{{forloop.counter}}" class="{{ category.logo }}">{{ category.name }}</a></li>
 			{% endfor %}
 		</ul>
 		<div class="slide fl">
 			<ul class="slide_pics">
 				{% for goods_banner in index_goods_banners %}
-				<li><img src="{{ goods_banner.image.url }}" alt="幻灯片"></li>
+				<li><a href="{% url 'goods:list' goods_banner.sku.category.id 1 %}"><img src="{{ goods_banner.image.url }}" alt="幻灯片"></a></li>
 				{% endfor %}
 			</ul>
 			<div class="prev"></div>
@@ -33,6 +31,7 @@
 			<ul class="points"></ul>
 		</div>
 		<div class="adv fl">
+            {#广告#}
 			{% for banner in promotion_banners %}
 			<a href="#"><img src="{{ banner.image.url }}"></a>
 			{% endfor %}
@@ -42,7 +41,7 @@
 	{% for category in categories %}
 	<div class="list_model">
 		<div class="list_title clearfix">
-			<h3 class="fl" id="model01">{{ category.name }}</h3>
+			<h3 class="fl" id="model0{{forloop.counter}}">{{ category.name }}</h3>
 			<div class="subtitle fl">
 				<span>|</span>
 				{% for banner in category.title_banners %}
@@ -53,7 +52,7 @@
 		</div>
 
 		<div class="goods_con clearfix">
-			<div class="goods_banner fl"><img src="{{ category.image.url }}"></div>
+			<div class="goods_banner fl"><a href="{% url 'goods:list' category.id 1 %}"><img src="{{ category.image.url }}"></a></div>
 			<ul class="goods_list fl">
 				{% for banner in category.image_banners %}
 				<li>

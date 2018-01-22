@@ -16,20 +16,16 @@ from django.core.mail import send_mail
 # django系统配置(邮件相关配置)
 from django.conf import settings
 # 页面静态化时使用的商品名称
-from goods.models import GoodsCategory, IndexGoodsBanner, IndexPromotionBanner, IndexCategoryGoodsBanner
+from goods.models import GoodsCategory,IndexGoodsBanner, IndexPromotionBanner, IndexCategoryGoodsBanner
 # 获取需要加载数据的模板对象
 from django.template import loader, RequestContext
-
-import os
-
-
-
 # 创建celery的应用
 # celery_app = Celery()
 # 参数1: broker(消息中间人)名字 参数2:任务存储空间(缓存)
-app = Celery('dailyfresh', broker='redis://192.168.62.130:6379/0')
+app = Celery('dailyfresh', broker='redis://127.0.0.1:6379/0')
 
-# 定义任务
+
+# 定义发送邮件任务
 # app.task()是将任务处理函数注册到broker的任务队列中,这时函数变成了一个任务
 @app.task
 def send_active_email(user_name,active_url,email):
@@ -49,6 +45,7 @@ def send_active_email(user_name,active_url,email):
             """ % (user_name,active_url, '请点击激活')
     send_mail('天天生鲜', '', settings.EMAIL_FROM, [email], html_message=html_message)
 
+
 # 页面静态化
 @app.task
 def generate_static_index_html():
@@ -60,13 +57,13 @@ def generate_static_index_html():
     promotion_banners = IndexPromotionBanner.objects.all().order_by("index")[:2]
     # 首页分类商品展示数据
     for category in categories:
-        category_goods_title_banners = IndexCategoryGoodsBanner.objects\
-                                        .filter(category=category,display_type=0)\
-                                        .order_by('index')[:5]
+        category_goods_title_banners =\
+            IndexCategoryGoodsBanner.objects.filter(category=category,display_type=0).order_by('index')[:5]
+        # python的特性：可以向对象中添加新的属性，通过属性赋值的方式
         category.title_banners = category_goods_title_banners
-        category_goods_image_banners = IndexCategoryGoodsBanner.objects\
-                                        .filter(category=category,display_type=1)\
-                                        .order_by('index')[:4]
+
+        category_goods_image_banners = \
+            IndexCategoryGoodsBanner.objects.filter(category=category,display_type=1).order_by('index')[:4]
         category.image_banners = category_goods_image_banners
         # print只接受字符串,当传入对象时,对象会先去调用__str__方法,返回字符串
         # print(category.title_banners)
@@ -80,26 +77,10 @@ def generate_static_index_html():
         'index_goods_banners': index_goods_banners,
         'promotion_banners': promotion_banners,
     }
-    # print("context")
-    # print(context)
-    # context数据内容有:
-    #     {
-    #         'categories': categories,
-    #         'index_goods_banners': index_goods_banners,
-    #         'promotion_banners': promotion_banners,
-    #         'cart_num': cart_num,
-    #     }
-    # 优化用户访问时间和降低数据库操作和服务器压力的方法
-    # 方法一: 页面静态化步骤
-    # 1.运营人员操作admin录入商品数据
-    # 2.Django将存储任务发布到celery任务队列中
-    # 3.在Celery处理admin站点保存请求的时候,执行生成静态页面的任务
-    # 4.将生成的静态页面保存到Nginx服务器中
-    # 5.
 
-    #  获取模板
+    #  加载模板
     temp = loader.get_template('index_for_static.html')
-    # 构造末班要要到的上下文对象(模板数据对象)
+    # 构造模板的上下文对象(模板数据对象)
     # 不需要传入request对象,可以直接通过render渲染模板
     # req_context = RequestContext(request,context)
     # 渲染模板

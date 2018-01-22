@@ -29,6 +29,7 @@ class BaseAdmin(admin.ModelAdmin):
         from celery_task.tasks import generate_static_index_html
         # 补充发布生产静态文件的celery任务(异步任务)
         generate_static_index_html.delay()
+
         # 在更新数据库数据的时候,同步修改缓存数据,(删除)
         cache.delete('index_data')
 
@@ -41,6 +42,7 @@ class BaseAdmin(admin.ModelAdmin):
         from celery_task.tasks import generate_static_index_html
         # 补充发布生产静态文件的celery任务(异步任务)
         generate_static_index_html.delay()
+
         # 在更新数据库数据的时候,同步修改缓存数据,(删除)
         cache.delete('index_data')
 

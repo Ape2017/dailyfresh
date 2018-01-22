@@ -11,16 +11,20 @@ For the full list of settings and their values, see
 有关设置及其值的完整列表，请参阅:
 https://docs.djangoproject.com/en/1.8/ref/settings/
 """
+
+
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+# 像这样在项目中构建路径：os.path.join（BASE_DIR，...）
 # os操作系统模块,程序与操作系统交互的接口
 import os
 # sys Python解释器系统模块,程序与解释器交互的接口
 import sys
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-# 像这样在项目中构建路径：os.path.join（BASE_DIR，...）
 # 项目根目录 os.path.dirname 获取上一级目录名 os.path.abspath 获取当前目录的名字
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # 添加apps下所有应用的所在路径到python解释器的导包路径中,1代表路径列表中的序号,下标为0
 sys.path.insert(1, os.path.join(BASE_DIR, 'apps'))
+
+
 # Quick-start development settings - unsuitable for production
 # 快速启动开发设置——不适合生产 详细信息查看下面路径
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
@@ -43,6 +47,8 @@ DEBUG = True
 # ]
 # 主机域名列表
 ALLOWED_HOSTS = []
+
+
 # Application definition
 # 应用注册表
 # INSTALLED_APPS是一个一元数组.里面是应用中要加载的自带或者自己定制的app包路径列表.
@@ -59,12 +65,12 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     # 静态文件管理
     'django.contrib.staticfiles',
+    # 富文本编辑器
+    'tinymce',
     # 全文检索框架
     'haystack',
     # 注册djcelery
     # 'djcelery'
-    # 富文本编辑器
-    'tinymce',
     # 用户中心
     'users',
     # 商品管理
@@ -74,9 +80,13 @@ INSTALLED_APPS = (
     # 购物车管理
     'carts',
 )
+
+
 # 声明django自带的认证系统要使用的用户数据表对应的模型类
 # AUTH_USER_MODEL = '应用名.模型类名'
 AUTH_USER_MODEL = 'users.User'
+
+
 # web应用中需要加载的一些中间件列表.是一个一元数组.
 # 里面是django自带的或者定制的中间件包路径,如下：
 MIDDLEWARE_CLASSES = (
@@ -99,6 +109,7 @@ MIDDLEWARE_CLASSES = (
     # SecurityMiddleware 安全中间件
     'django.middleware.security.SecurityMiddleware',
 )
+
 # 一个字符串，表示根URLconf 的完整Python 导入路径。例如："mydjangoapps.urls"。
 # 每个请求可以覆盖它，方法是设置进来的HttpRequest 对象的urlconf属性。
 # 细节参见Django 如何处理一个请求。
@@ -130,6 +141,7 @@ TEMPLATES = [
     },
 ]
 
+# wsgi接口,配置服务器
 WSGI_APPLICATION = 'dailyfresh.wsgi.application'
 
 # Database
@@ -179,6 +191,87 @@ DATABASES = {
 # 指明数据库的读写分离路由
 DATABASES_ROUTERS = ['utils.db_routers.MasterSlaveRouter']
 
+
+# Internationalization
+# https://docs.djangoproject.com/en/1.8/topics/i18n/
+# LANGUAGE_CODE 默认值：'en-us'
+# 表示此安装的语言代码的字符串。
+# 这应该是标准的language ID format。
+# 例如，美国英语是"en-us"。
+# 另请参阅语言标识符列表和Internationalization and localization。
+# USE_I18N必须处于活动状态才能使此设置生效。
+# 它有两个目的：
+# 1.如果区域中间件未使用，则会决定向所有用户提供哪个翻译。
+# 2.如果区域中间件处于活动状态，则它会提供后备语言，
+# 以防用户的首选语言无法确定或网站不支持。
+# 当用户的首选语言不存在给定文字的翻译时，它还提供后备翻译。
+LANGUAGE_CODE = 'zh-hans'
+# TIME_ZONE 默认：'America/Chicago'
+# 一个字符串或者None，表示项目的时区。
+TIME_ZONE = 'Asia/Shanghai'
+# USE_I18N 默认值：True
+# 这是一个布尔值，它指定Django的翻译系统是否被启用。它提供了一种简单的方式去关闭翻译系统。
+# 如果设置为 False, Django 会做一些优化，不去加载翻译机制
+USE_I18N = True
+# USE_L10N 默认值：False
+# 是一个布尔值，用于决定是否默认进行日期格式本地化。
+# 如果此设置为True，例如Django将使用当前语言环境的格式显示数字和日期。
+USE_L10N = True
+# USE_TZ 默认: False
+# 这是一个布尔值,用来指定是否使用指定的时区(TIME_ZONE)的时间.
+# 若为 True, 则Django 会使用内建的时区的时间否则, Django 将会使用本地的时间
+# 另请参阅TIME_ZONE，USE_I18N和USE_L10N。
+# 注意:使用django-admin startproject创建的项目中的 settings.py 文件中,
+# 为了方便将 USE_TZ 设置为 True
+USE_TZ = True
+
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/1.8/howto/static-files/
+# 静态文件路径,模板文件引用静态文件时使用
+# STATIC_URL 默认值: None
+# 引用位于STATIC_ROOT中的静态文件时使用的网址。
+# 示例："/static/"或"http://static.example.com/"
+# 如果不是None，则将用作asset definitions（Media类）和staticfiles app
+# 如果设置为非空值，它必须以斜杠结尾。
+# 您可能需要configure these files to be served in development，
+# 并且肯定需要在生产中执行in production
+STATIC_URL = '/static/'
+# 将静态文件目录的路径添加到添加到静态文件路径中
+# STATICFILES_DIRS 默认值：[]
+# 此设置定义了在启用FileSystemFinder finder时staticfiles应用程序将遍历的附加位置。
+# 如果您使用collectstatic或findstatic管理命令或使用静态文件提供视图。
+# 这应该设置为一个列表或元组的字符串，其中包含您的额外文件目录的完整路径例如：
+# STATICFILES_DIRS = (
+#     "/home/special.polls.com/polls/static",
+#     "/home/polls.com/polls/static",
+#     "/opt/webfiles/common", )
+# 请注意，即使在Windows上（例如"C:/Users/user/mysite/extra_static_content"），
+# 这些路径应使用Unix样式的正斜杠。
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+
+
+# 邮件相关信息配置
+# EMAIL_BACKEND 默认：'django.core.mail.backends.smtp.EmailBackend'
+# 用于发送邮件的后端。可选的后端参见发送邮件。
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST 默认：'localhost' 发送邮件使用的主机。
+EMAIL_HOST = 'smtp.126.com'
+# EMAIL_PORT 默认：25  EMAIL_HOST 定义的SMTP 服务器使用的端口。
+EMAIL_PORT = 25
+# MAIL_HOST_USER 默认：''（空字符串）
+# EMAIL_HOST 定义的SMTP 服务器使用的用户名。如果为空，Django 不会尝试认证。
+EMAIL_HOST_USER = 'daily_fresh@126.com'
+# EMAIL_HOST_PASSWORD 默认：''（空字符串）
+# EMAIL_HOST 定义的SMTP 服务器使用的密码。
+# 这个设置与EMAIL_HOST_USER 一起用于SMTP 服务器的认证。
+# 如果两个中有一个为空，Django 则不会尝试认证。
+EMAIL_HOST_PASSWORD = 'ITCAST123'
+# 邮件发件人设置
+EMAIL_FROM = '天天生鲜<daily_fresh@126.com>'
+
+
+
 # Cache 缓存配置
 # http://django-redis-chs.readthedocs.io/zh_CN/latest/#cache-backend
 # 一个字典包含所有缓存要使用的设置它是一个嵌套字典，
@@ -226,81 +319,6 @@ SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 # 使用缓存存储会话时, 使用何种缓存,即CACHES中的键
 SESSION_CACHE_ALIAS = "default"
 
-# Internationalization
-# https://docs.djangoproject.com/en/1.8/topics/i18n/
-# LANGUAGE_CODE 默认值：'en-us'
-# 表示此安装的语言代码的字符串。
-# 这应该是标准的language ID format。
-# 例如，美国英语是"en-us"。
-# 另请参阅语言标识符列表和Internationalization and localization。
-# USE_I18N必须处于活动状态才能使此设置生效。
-# 它有两个目的：
-# 1.如果区域中间件未使用，则会决定向所有用户提供哪个翻译。
-# 2.如果区域中间件处于活动状态，则它会提供后备语言，
-# 以防用户的首选语言无法确定或网站不支持。
-# 当用户的首选语言不存在给定文字的翻译时，它还提供后备翻译。
-LANGUAGE_CODE = 'zh-hans'
-# TIME_ZONE 默认：'America/Chicago'
-# 一个字符串或者None，表示项目的时区。
-TIME_ZONE = 'Asia/Shanghai'
-# USE_I18N 默认值：True
-# 这是一个布尔值，它指定Django的翻译系统是否被启用。它提供了一种简单的方式去关闭翻译系统。
-# 如果设置为 False, Django 会做一些优化，不去加载翻译机制
-USE_I18N = True
-# USE_L10N 默认值：False
-# 是一个布尔值，用于决定是否默认进行日期格式本地化。
-# 如果此设置为True，例如Django将使用当前语言环境的格式显示数字和日期。
-USE_L10N = True
-# USE_TZ 默认: False
-# 这是一个布尔值,用来指定是否使用指定的时区(TIME_ZONE)的时间.
-# 若为 True, 则Django 会使用内建的时区的时间否则, Django 将会使用本地的时间
-# 另请参阅TIME_ZONE，USE_I18N和USE_L10N。
-# 注意:使用django-admin startproject创建的项目中的 settings.py 文件中,
-# 为了方便将 USE_TZ 设置为 True
-USE_TZ = True
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.8/howto/static-files/
-# 静态文件路径,模板文件引用静态文件时使用
-# STATIC_URL 默认值: None
-# 引用位于STATIC_ROOT中的静态文件时使用的网址。
-# 示例："/static/"或"http://static.example.com/"
-# 如果不是None，则将用作asset definitions（Media类）和staticfiles app
-# 如果设置为非空值，它必须以斜杠结尾。
-# 您可能需要configure these files to be served in development，
-# 并且肯定需要在生产中执行in production
-STATIC_URL = '/static/'
-# 将静态文件目录的路径添加到添加到静态文件路径中
-# STATICFILES_DIRS 默认值：[]
-# 此设置定义了在启用FileSystemFinder finder时staticfiles应用程序将遍历的附加位置。
-# 如果您使用collectstatic或findstatic管理命令或使用静态文件提供视图。
-# 这应该设置为一个列表或元组的字符串，其中包含您的额外文件目录的完整路径例如：
-# STATICFILES_DIRS = (
-#     "/home/special.polls.com/polls/static",
-#     "/home/polls.com/polls/static",
-#     "/opt/webfiles/common", )
-# 请注意，即使在Windows上（例如"C:/Users/user/mysite/extra_static_content"），
-# 这些路径应使用Unix样式的正斜杠。
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-
-# 邮件相关信息配置
-# EMAIL_BACKEND 默认：'django.core.mail.backends.smtp.EmailBackend'
-# 用于发送邮件的后端。可选的后端参见发送邮件。
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST 默认：'localhost' 发送邮件使用的主机。
-EMAIL_HOST = 'smtp.126.com'
-# EMAIL_PORT 默认：25  EMAIL_HOST 定义的SMTP 服务器使用的端口。
-EMAIL_PORT = 25
-# MAIL_HOST_USER 默认：''（空字符串）
-# EMAIL_HOST 定义的SMTP 服务器使用的用户名。如果为空，Django 不会尝试认证。
-EMAIL_HOST_USER = 'daily_fresh@126.com'
-# EMAIL_HOST_PASSWORD 默认：''（空字符串）
-# EMAIL_HOST 定义的SMTP 服务器使用的密码。
-# 这个设置与EMAIL_HOST_USER 一起用于SMTP 服务器的认证。
-# 如果两个中有一个为空，Django 则不会尝试认证。
-EMAIL_HOST_PASSWORD = 'ITCAST123'
-# 邮件发件人设置
-EMAIL_FROM = '天天生鲜<daily_fresh@126.com>'
 
 # 被django的login_required装饰器使用的参数,登陆的网址
 # LOGIN_URL 默认：'/accounts/login/'

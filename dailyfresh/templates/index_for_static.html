@@ -24,7 +24,7 @@
 					<span>|</span>
 					<a href="{% url 'users:info' %}">用户中心</a>
 					<span>|</span>
-					<a href="{% url 'users:cart' %}">我的购物车</a>
+					<a href="#">我的购物车</a>
 					<span>|</span>
 					<a href="{% url 'users:order' %}">我的订单</a>
 				</div>
@@ -35,11 +35,13 @@
 	<div class="search_bar clearfix">
 		<a href="{% url 'goods:index' %}" class="logo fl"><img src="{% static 'images/logo.png' %}"></a>
 		<div class="search_con fl">
+            <form method="get" action="/search/">
 			<input type="text" class="input_text fl" name="" placeholder="搜索商品">
 			<input type="button" class="input_btn fr" name="" value="搜索">
-		</div>
+		    </form>
+        </div>
 		<div class="guest_cart fr">
-			<a href="{% url 'users:cart' category.id 1 %}" class="cart_name fl">我的购物车</a>
+			<a href="#" class="cart_name fl">我的购物车</a>
 			<div class="goods_count fl" id="show_count">0</div>
 		</div>
 	</div>
@@ -122,7 +124,7 @@
 		<p>CopyRight © 2016 北京天天生鲜信息技术有限公司 All Rights Reserved</p>
 		<p>电话：010-****888    京ICP备*******8号</p>
 	</div>
-	<script type="text/javascript" src="{% static 'js/slideshow.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/slide.js' %}"></script>
 	<script type="text/javascript">
 		BCSlideshow('focuspic');
 		var oFruit = document.getElementById('fruit_more');
