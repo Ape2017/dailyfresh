@@ -29,7 +29,9 @@ Including another URLconf
 from django.conf.urls import include, url
 # 普通核心模块
 from django.contrib import admin
-# 富文本模块
+# 全文检索
+from haystack import urls as haystackurls
+# 富文本编辑器模块
 from tinymce import urls as tinymceurls
 # 用户应用
 from users import urls as usersurls
@@ -45,6 +47,8 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     # 富文本编辑器
     url(r'^tinymce/', include(tinymceurls)),
+    # 全文检索
+    url(r'^search/',include(haystackurls)),
     # 用户管理app
     url(r'^users/', include(usersurls, namespace="users")),
     # 商品中心app

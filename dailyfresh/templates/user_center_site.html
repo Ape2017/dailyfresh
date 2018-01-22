@@ -1,30 +1,26 @@
-{% extends 'user_center_base.html' %}
+{% extends "user_center_base.html" %}
 
 {% block body %}
-    <div class="main_con clearfix">
-        <div class="left_menu_con clearfix">
-            <h3>用户中心</h3>
-            <ul>
-                <li><a href="{% url 'users:info' %}">· 个人信息</a></li>
-                <li><a href="{% url 'orders:order' %}">· 全部订单</a></li>
-                <li><a href="{% url 'users:address' %}" class="active">· 收货地址</a></li>
-            </ul>
-        </div>
-
+	<div class="main_con clearfix">
+		<div class="left_menu_con clearfix">
+			<h3>用户中心</h3>
+			<ul>
+				<li><a href="{% url 'users:info' %}">· 个人信息</a></li>
+				<li><a href="{% url 'users:order' %}">· 全部订单</a></li>
+				<li><a href="{% url 'users:address' %}" class="active">· 收货地址</a></li>
+			</ul>
+		</div>
         <div class="right_content clearfix">
             <h3 class="common_title2">收货地址</h3>
             <div class="site_con">
-                <ul type="font-size:20px text-context:20px">
-                    <h3>当前地址：</h3>
+                <dl>
+                    <dt>当前地址：</dt>
                     {% if address %}
-                        <li>&nbsp;&nbsp;&nbsp;&nbsp;<span>详细地址：</span>&nbsp;&nbsp;&nbsp;&nbsp;{{ address.detail_addr }}</li>
-                        <li>&nbsp;&nbsp;&nbsp;&nbsp;<span>邮编：</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ address.zip_code }}</li>
-                        <li>&nbsp;&nbsp;&nbsp;&nbsp;<span>收件人：</span>&nbsp;&nbsp;{{ address.receiver_name }}</li>
-                        <li>&nbsp;&nbsp;&nbsp;&nbsp;<span>手机：</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ address.receiver_mobile }}</li>
+                    <dd>{{ address.detail_addr }} 邮编：{{ address.zip_code}} （{{ address.receiver_name}} 收） {{ address.receiver_mobile}}</dd>
                     {% else %}
-                        <li></li>
+                    <dd></dd>
                     {% endif %}
-                </ul>
+                </dl>
             </div>
             <h3 class="common_title2">编辑地址</h3>
             <div class="site_con">
@@ -51,6 +47,7 @@
                 </form>
             </div>
         </div>
-    </div>
+	</div>
+
 {% endblock %}
 

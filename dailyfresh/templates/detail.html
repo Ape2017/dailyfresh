@@ -19,11 +19,11 @@
 	</div>
 
 	<div class="breadcrumb">
-		<a href="/">全部分类</a>
+		<a href="{% url 'goods:index'  %}">全部分类</a>
 		<span>></span>
-		<a href="#">{{ sku.category.name }}</a>
+		<a href="{% url 'goods:list' sku.category.id 1 %}">{{ sku.category.name }}</a>
 		<span>></span>
-		<a href="#">商品详情</a>
+		<a href="{% url 'goods:detail' sku.id  %}">商品详情</a>
 	</div>
 
 	<div class="goods_detail_con clearfix">
@@ -107,5 +107,88 @@
 
 		</div>
 	</div>
+{% endblock %}
+
+{% block bottom %}
+	<div class="add_jump"></div>
+	<script type="text/javascript" src="{% static 'js/slide.js' %}"></script>
+	<script type="text/javascript">
+		$("#tag_detail").click(function(){
+			$("#tag_comment").removeClass("active");
+			$(this).addClass("active");
+			$("#tab_comment").hide();
+			$("#tab_detail").show();
+		});
+
+		$("#tag_comment").click(function(){
+			$("#tag_detail").removeClass("active");
+			$(this).addClass("active");
+			$("#tab_detail").hide();
+			$("#tab_comment").show();
+		});
+
+		var $add_x = $('#add_cart').offset().top;
+		var $add_y = $('#add_cart').offset().left;
+
+		var $to_x = $('#show_count').offset().top;
+		var $to_y = $('#show_count').offset().left;
+
+		$(".add_jump").css({'left':$add_y+80,'top':$add_x+10,'display':'block'})
+
+		$("#add_cart").click(function () {
+            // 向后端视图发送请求，让后端保存购物车数据
+            // attr(属性名，属性值) 设置
+            // attr(属性名） 获取
+            var data = {
+                sku_id: $(this).attr("sku_id"),
+                sku_count: $("#num_show").val(),
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            };
+            $.post("/carts/add", data, function (resp) {
+                // resp 是被ajax解析json字符串执行后的对象（字典）
+                // resp.code
+                // resp.errmsg
+                if (resp.code == 0) {
+                    // 后端保存购物车数据成功
+                    $(".add_jump").stop().animate({
+                            'left': $to_y + 7,
+                            'top': $to_x + 7
+                        },
+                        "fast", function () {
+                            $(".add_jump").fadeOut('fast', function () {
+                                $('#show_count').html(resp.cart_num);
+                            });
+                        });
+
+                } else {
+                    alert(resp.errmsg);
+                }
+            }, 'json')
+        });
+
+		$("#add").click(function () {
+			var num_show = $("#num_show").val();
+			num_show = parseInt(num_show)
+			num_show += 1;
+			$("#num_show").val(num_show);
+			var price = $(".show_pirze>em").html()
+			price = parseFloat(price);
+			var total = price * num_show;
+			$(".total>em").html(total.toFixed(2));
+		});
+		$("#minus").click(function () {
+			var num_show = $("#num_show").val();
+			num_show = parseInt(num_show)
+			num_show -= 1;
+			if (num_show < 1) {
+				num_show = 1;
+			}
+			$("#num_show").val(num_show);
+			var price = $(".show_pirze>em").html()
+			price = parseFloat(price);
+			var total = price * num_show;
+			$(".total>em").html(total.toFixed(2));
+		});
+	</script>
 {% endblock %}
 

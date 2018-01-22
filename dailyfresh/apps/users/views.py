@@ -469,4 +469,10 @@ class UsersInfoView(LoginRequiredMixin, View):
         return render(request, 'user_center_info.html', context)
 
 
+class UsersOrderView(LoginRequiredMixin, View):
+    def get(self,request):
+        pass
 
+
+class UsersCartView(LoginRequiredMixin, View):
+    pass

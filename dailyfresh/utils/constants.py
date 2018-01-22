@@ -6,3 +6,6 @@ INDEX_DATA_CACHE = 3600
 
 # 商品详情缓存数据的有效期 单位秒
 DETAIL_DATA_CACHE_EXPIRES = 3600
+
+# 购物车数据cookie的有效期，单位：秒
+CART_INFO_COOKIE_EXPIRES = 7 * 24 * 60 * 60

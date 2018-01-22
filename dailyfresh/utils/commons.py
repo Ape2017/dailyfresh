@@ -1,6 +1,17 @@
 # 系统自带的用户访问权限管理模块,login_required 登录状态装饰器
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
+from django.http import JsonResponse
 
+
+# def login_required_json(view_func):
+#     @wraps(view_func)
+#     def wrapper(request, *args, **kwargs):
+#         if not request.user.is_authenticated():
+#             return JsonResponse({'code': 1, 'message': '用户未登录'})
+#         else:
+#             return view_func(request, *args, **kwargs)
+#     return wrapper
 
 class LoginRequiredMixin(object):
     """自定义组件模块,用于校验用户访问权限等功能"""
@@ -23,4 +34,13 @@ class LoginRequiredMixin(object):
         """
         view = super(LoginRequiredMixin, cls).as_view(*args, **kwargs)
         view = login_required(view)
+        return view
+
+
+class TransactionAtomicMixin(object):
+    """事务支持扩充"""
+    @classmethod
+    def as_view(cls, *args,**kwargs):
+        view = super(TransactionAtomicMixin, cls) .as_view(*args, **kwargs)
+        view = transaction.atomic(view)
         return view

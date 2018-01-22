@@ -171,3 +171,11 @@ day04:
     fastDFS:
         1.定义文件
 
+day05:
+    detail:详情页
+    分表
+
+day06:
+    search:搜索
+
+    cart:购物车

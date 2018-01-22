@@ -11,27 +11,23 @@ For the full list of settings and their values, see
 有关设置及其值的完整列表，请参阅:
 https://docs.djangoproject.com/en/1.8/ref/settings/
 """
-
+# os操作系统模块,程序与操作系统交互的接口
 import os
+# sys Python解释器系统模块,程序与解释器交互的接口
 import sys
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 # 像这样在项目中构建路径：os.path.join（BASE_DIR，...）
 # 项目根目录 os.path.dirname 获取上一级目录名 os.path.abspath 获取当前目录的名字
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-# 添加apps下所有应用的所在路径到python解释器的导包路径中
+# 添加apps下所有应用的所在路径到python解释器的导包路径中,1代表路径列表中的序号,下标为0
 sys.path.insert(1, os.path.join(BASE_DIR, 'apps'))
-
 # Quick-start development settings - unsuitable for production
 # 快速启动开发设置——不适合生产 详细信息查看下面路径
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
 # 安全警告:保留生产秘密中使用的秘密密钥
 # 秘钥 用来生成身份令牌或其他需要使用的地方
 SECRET_KEY = 'y!jm-%8fi$uf4q7_h_^_9m3ea)ik8wwkin0$223ojqr7!3y_cd'
-
 # SECURITY WARNING: don't run with debug turned on in production!
 # 安全警告:不要在生产过程中运行调试
 # 调试模式在正常上线时必须改为fals
@@ -47,7 +43,6 @@ DEBUG = True
 # ]
 # 主机域名列表
 ALLOWED_HOSTS = []
-
 # Application definition
 # 应用注册表
 # INSTALLED_APPS是一个一元数组.里面是应用中要加载的自带或者自己定制的app包路径列表.
@@ -64,6 +59,10 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     # 静态文件管理
     'django.contrib.staticfiles',
+    # 全文检索框架
+    'haystack',
+    # 注册djcelery
+    # 'djcelery'
     # 富文本编辑器
     'tinymce',
     # 用户中心
@@ -75,12 +74,11 @@ INSTALLED_APPS = (
     # 购物车管理
     'carts',
 )
-
 # 声明django自带的认证系统要使用的用户数据表对应的模型类
 # AUTH_USER_MODEL = '应用名.模型类名'
 AUTH_USER_MODEL = 'users.User'
-
-# web应用中需要加载的一些中间件列表.是一个一元数组.里面是django自带的或者定制的中间件包路径,如下：
+# web应用中需要加载的一些中间件列表.是一个一元数组.
+# 里面是django自带的或者定制的中间件包路径,如下：
 MIDDLEWARE_CLASSES = (
     # SessionMiddleware会话中间件
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -326,3 +324,34 @@ TINYMCE_DEFAULT_CONFIG = {
     'width': 800,
     'height': 600,
 }
+
+
+# 商品搜索时进行的配置项
+# haystack 全文检索配置
+HAYSTACK_CONNECTIONS ={
+    'default': {
+        # 使用whoosh后端引擎,其中whoosh_backend为英文分词,不支持中文,支持中文需映入jieba
+        'ENGINE': 'haystack.backends.whoosh_cn_backend.WhooshEngine',
+        # 使用whoosh后端引擎,其中whoosh_cn_backend为引入jieba中文分词后的模块
+        # 'ENGINE': 'haystack.backends.whoosh_cn_backend.WhooshEngine',
+        # 索引文件路径
+        'PATH': os.path.join(BASE_DIR, 'whoosh_index'),
+    }
+}
+
+# 当添加、修改、删除数据时,自动生成索引
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+
+# 搜索结果页面分数的每页数量
+HAYSTACK_SEARCH_RESULTS_PER_PAGE = 10
+
+
+
+
+
+
+
+
+
+
+

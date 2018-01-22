@@ -7,8 +7,8 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'dailyfresh.settings'
 # 让django初始化一下，django读入配置文件的信息
 # django.setup()会询问操作系统配置文件的位置，读入配置文件的信息
 # 以下两行在启动celery时打开注释,启动Django时注释
-import django
-django.setup()
+# import django
+# django.setup()
 # 启动celery的命令
 # celery -A celery_task.tasks worker -l info
 # django系统调用邮箱接口发送邮件的函数
@@ -18,17 +18,16 @@ from django.conf import settings
 # 页面静态化时使用的商品名称
 from goods.models import GoodsCategory, IndexGoodsBanner, IndexPromotionBanner, IndexCategoryGoodsBanner
 # 获取需要加载数据的模板对象
-from django.template import loader
+from django.template import loader, RequestContext
 
-
-from django.template import RequestContext
+import os
 
 
 
 # 创建celery的应用
 # celery_app = Celery()
 # 参数1: broker(消息中间人)名字 参数2:任务存储空间(缓存)
-app = Celery('dailyfresh', broker='redis://127.0.0.1:6379/0')
+app = Celery('dailyfresh', broker='redis://192.168.62.130:6379/0')
 
 # 定义任务
 # app.task()是将任务处理函数注册到broker的任务队列中,这时函数变成了一个任务
@@ -50,43 +49,39 @@ def send_active_email(user_name,active_url,email):
             """ % (user_name,active_url, '请点击激活')
     send_mail('天天生鲜', '', settings.EMAIL_FROM, [email], html_message=html_message)
 
-
-
 # 页面静态化
 @app.task
 def generate_static_index_html():
     # 商品的品类
     categories = GoodsCategory.objects.all()
     # 首页轮播图
-    index_goods_banners = IndexGoodsBanner.objects.all()[:4]
+    index_goods_banners = IndexGoodsBanner.objects.all().order_by("index")[:4]
     # 首页广告活动数据,[]切片,限制数量
-    promotion_banners = IndexPromotionBanner.objects.all()[:2]
+    promotion_banners = IndexPromotionBanner.objects.all().order_by("index")[:2]
     # 首页分类商品展示数据
     for category in categories:
-        category_goods_title_banners = IndexCategoryGoodsBanner\
-                                        .objects.filter(category=category,display_type=0)\
+        category_goods_title_banners = IndexCategoryGoodsBanner.objects\
+                                        .filter(category=category,display_type=0)\
                                         .order_by('index')[:5]
         category.title_banners = category_goods_title_banners
-        category_goods_image_banners = IndexCategoryGoodsBanner\
-                                        .objects.filter(category=category,display_type=1)\
-                                        .order_by(category.index)[:4]
+        category_goods_image_banners = IndexCategoryGoodsBanner.objects\
+                                        .filter(category=category,display_type=1)\
+                                        .order_by('index')[:4]
         category.image_banners = category_goods_image_banners
         # print只接受字符串,当传入对象时,对象会先去调用__str__方法,返回字符串
-        print(category.title_banners)
-        print(category.image_banners)
-        print(category)
-        print('')
-    # 购物车数量
-    cart_num = 0
+        # print(category.title_banners)
+        # print(category.image_banners)
+        # print(category)
+        # print('')
+
     # 模板的数据
     context = {
         'categories': categories,
         'index_goods_banners': index_goods_banners,
         'promotion_banners': promotion_banners,
-        'cart_num': cart_num,
     }
-    print("context")
-    print(context)
+    # print("context")
+    # print(context)
     # context数据内容有:
     #     {
     #         'categories': categories,
@@ -112,7 +107,5 @@ def generate_static_index_html():
 
     # 保存生成好的静态文件
     file_path = os.path.join(settings.BASE_DIR, 'static/index.html')
-
-    # 保存文件
     with open(file_path, 'w') as f:
         f.write(html_file_data)
