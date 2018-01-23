@@ -28,9 +28,5 @@ urlpatterns = [
     url(r'^address$', views.AddressView.as_view(), name="address"),
     # 用户信息
     url(r'^info$', views.UsersInfoView.as_view(), name="info"),
-    # 用户购物车
-    url(r'^cart$', views.UsersCartView.as_view(), name="cart"),
-    # 用户订单
-    url(r'^order$', views.UsersOrderView.as_view(), name="order"),
 
 ]

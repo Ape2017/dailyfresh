@@ -71,7 +71,7 @@ class IndexPromotionBannerAdmin(BaseAdmin):
 # 在管理后台注册
 admin.site.register(GoodsCategory, GoodsCategoryAdmin)
 admin.site.register(Goods)
-admin.site.register(GoodsSKU)
+admin.site.register(GoodsSKU,GoodsCategoryAdmin)
 admin.site.register(GoodsImage)
 admin.site.register(IndexGoodsBanner, IndexGoodsBannerAdmin)
 admin.site.register(IndexCategoryGoodsBanner, IndexCategoryGoodsBannerAdmin)

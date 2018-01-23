@@ -2,6 +2,7 @@
 作用是根据不同的url模式作用数据库中的数据后返回给浏览器不同的html文件
 """
 # 正则匹配模块 校验用户输入的邮箱有效性时使用
+import json
 import re
 # 返回http页面
 from django.http import HttpResponse
@@ -40,9 +41,9 @@ from goods.models import GoodsSKU
 # 用户注册
 class RegisterView(View):
     """注册类视图,继承View类注册业务逻辑"""
-
     def get(self, request):
         """对应get请求方式的逻辑"""
+        # 静态页面返回
         return render(request, "register.html")
 
     def post(self, request):
@@ -116,7 +117,7 @@ class RegisterView(View):
         send_active_email.delay(user_name, active_url, email)
 
         # 2.返回注册成功信息,提示激活
-        url = reverse('users:login')
+        url = reverse('goods:index')
         # print('重定向路由:'+ url)
         # redirect()参数:url 重定向:返回的是一个请求链接
         return redirect(url)
@@ -125,11 +126,10 @@ class RegisterView(View):
 # 账户激活
 class UserActiveView(View):
     """用户激活视图"""
-
     def get(self, request, user_token):
         """
         用户激活
-        :param request:
+        :param request:django的请求对象
         :param user_token: 用户激活令牌
         :return:
         """
@@ -169,50 +169,50 @@ class LoginView(View):
     # request对象的GET属性:从查询字符串中获取参数(url)
     # request对象的POST属性:从请求体中获取参数
     def get(self, request):
+        print("用户获取了登录页面")
         """对应get请求方式的逻辑"""
-        scheme1 = request.scheme
-        print('scheme属性为:', end='')
-        print(scheme1)
-        body1 = request.body
-        print('body属性为:', end='' )
-        print(body1)
-        path1 = request.path
-        print('path属性为:', end='' )
-        print(path1)
-        path_info1 = request.path_info
-        print('path_info属性为:', end='')
-        print(path_info1)
-        method1 = request.method
-        print('method属性为:', end='')
-        print(method1)
-        encoding1 = request.encoding
-        print('encoding属性为:', end='')
-        print(encoding1)
-        GET1 = request.GET
-        print('GET属性为:', end='')
-        print(GET1)
-        POST1 = request.POST
-        print('POST属性为:', end='')
-        print(POST1)
-        COOKIES1 = request.COOKIES
-        print('COOKIES属性为:', end='')
-        print(COOKIES1)
-        FILES1 = request.FILES
-        print('FILES属性为:', end='')
-        print(FILES1)
-        META1 = request.META
-        print('META属性为:', end='')
-        print(META1)
-        user1 = request.user
-        print('user属性为:', end='')
-        print(user1)
-        session1 = request.session
-        print('session属性为:', end='')
-        print(session1)
-        resolver_match1 = request.resolver_match
-        print('resolver_match属性为:', end='')
-        print(resolver_match1)
-        
+        # scheme1 = request.scheme
+        # print('scheme属性为:', end='')
+        # print(scheme1)
+        # body1 = request.body
+        # print('body属性为:', end='' )
+        # print(body1)
+        # path1 = request.path
+        # print('path属性为:', end='' )
+        # print(path1)
+        # path_info1 = request.path_info
+        # print('path_info属性为:', end='')
+        # print(path_info1)
+        # method1 = request.method
+        # print('method属性为:', end='')
+        # print(method1)
+        # encoding1 = request.encoding
+        # print('encoding属性为:', end='')
+        # print(encoding1)
+        # GET1 = request.GET
+        # print('GET属性为:', end='')
+        # print(GET1)
+        # POST1 = request.POST
+        # print('POST属性为:', end='')
+        # print(POST1)
+        # COOKIES1 = request.COOKIES
+        # print('COOKIES属性为:', end='')
+        # print(COOKIES1)
+        # FILES1 = request.FILES
+        # print('FILES属性为:', end='')
+        # print(FILES1)
+        # META1 = request.META
+        # print('META属性为:', end='')
+        # print(META1)
+        # user1 = request.user
+        # print('user属性为:', end='')
+        # print(user1)
+        # session1 = request.session
+        # print('session属性为:', end='')
+        # print(session1)
+        # resolver_match1 = request.resolver_match
+        # print('resolver_match属性为:', end='')
+        # print(resolver_match1)
         return render(request, "login.html")
 
     def post(self, request):
@@ -223,49 +223,49 @@ class LoginView(View):
         """
         # 1.1.获取用户输入的数据: 用户名,密码
         # POST从请求体获取数据
-        scheme1 = request.scheme
-        print('scheme属性为:', end='')
-        print(scheme1)
-        body1 = request.body
-        print('body属性为:', end='')
-        print(body1)
-        path1 = request.path
-        print('path属性为:', end='')
-        print(path1)
-        path_info1 = request.path_info
-        print('path_info属性为:', end='')
-        print(path_info1)
-        method1 = request.method
-        print('method属性为:', end='')
-        print(method1)
-        encoding1 = request.encoding
-        print('encoding属性为:', end='')
-        print(encoding1)
-        GET1 = request.GET
-        print('GET属性为:', end='')
-        print(GET1)
-        POST1 = request.POST
-        print('POST属性为:', end='')
-        print(POST1)
-        COOKIES1 = request.COOKIES
-        print('COOKIES属性为:', end='')
-        print(COOKIES1)
-        FILES1 = request.FILES
-        print('FILES属性为:', end='')
-        print(FILES1)
-        META1 = request.META
-        print('META属性为:', end='')
-        print(META1)
-        user1 = request.user
-        print('user属性为:', end='')
-        print(user1)
-        session1 = request.session
-        print('session属性为:', end='')
-        print(session1)
-        resolver_match1 = request.resolver_match
-        print('resolver_match属性为:', end='')
-        print(resolver_match1)
-
+        # scheme1 = request.scheme
+        # print('scheme属性为:', end='')
+        # print(scheme1)
+        # body1 = request.body
+        # print('body属性为:', end='')
+        # print(body1)
+        # path1 = request.path
+        # print('path属性为:', end='')
+        # print(path1)
+        # path_info1 = request.path_info
+        # print('path_info属性为:', end='')
+        # print(path_info1)
+        # method1 = request.method
+        # print('method属性为:', end='')
+        # print(method1)
+        # encoding1 = request.encoding
+        # print('encoding属性为:', end='')
+        # print(encoding1)
+        # GET1 = request.GET
+        # print('GET属性为:', end='')
+        # print(GET1)
+        # POST1 = request.POST
+        # print('POST属性为:', end='')
+        # print(POST1)
+        # COOKIES1 = request.COOKIES
+        # print('COOKIES属性为:', end='')
+        # print(COOKIES1)
+        # FILES1 = request.FILES
+        # print('FILES属性为:', end='')
+        # print(FILES1)
+        # META1 = request.META
+        # print('META属性为:', end='')
+        # print(META1)
+        # user1 = request.user
+        # print('user属性为:', end='')
+        # print(user1)
+        # session1 = request.session
+        # print('session属性为:', end='')
+        # print(session1)
+        # resolver_match1 = request.resolver_match
+        # print('resolver_match属性为:', end='')
+        # print(resolver_match1)
+        print('用户登陆了网站')
         username = request.POST.get('username')
         password = request.POST.get('pwd')
         # 1.2.参数校验
@@ -306,20 +306,65 @@ class LoginView(View):
         else:
             # 关闭浏览器就失效
             request.session.set_expiry(0)
+
+        # 合并用户登录与未登录的购物车数据,即cookie与redis的数据
+        # 取出cookie里的购物车数据,未登录状态
+        cart_json_str = request.COOKIES.get('cart_info')
+        # 判断购物车内是否有数据
+        if cart_json_str:
+            # 有,将Json字符串转换成字典
+            cart_cookie_dict = json.loads(cart_json_str)
+        else:
+            # 没有,cart_cookie_dict设置成空字典
+            cart_cookie_dict = {}
+
+        # 取出redis中的购物车数据
+        # 获取redis数据库对象
+        redis_conn = get_redis_connection('default')
+        # 获取数据库中该用户存储的购物车数据{b'sku_id":b'sku_count'}
+        cart_redis_dict = redis_conn.hgetall('cart_%s'% user.id)
+        # 判断redis中购物车是数据
+        if not cart_redis_dict:
+            # 没有,设置成空字典
+            cart_redis_dict = {}
+        # 合并购物车数据
+        # 遍历cookie中的数据,获取sku_id和sku_count
+        for sku_id, sku_count in cart_cookie_dict.items():
+            # 将sku_id转换成字节码,用于和redis中数据比较
+            sku_id = sku_id.encode()
+            # 如果cookie中的sku_id在redis中有相同商品,数量累加
+            if sku_id in cart_redis_dict:
+                # 合并数据
+                sku_count += int(cart_redis_dict[sku_id])
+                # 设置cart_redis_dict中键sku_id的值为sku_count
+                cart_redis_dict[sku_id] = sku_count
+            # 没有相同商品
+            else:
+                # 设置cart_redis_dict中键sku_id的值为sku_count
+                cart_redis_dict[sku_id] = sku_count
+        # 将合并的购物车数据保存到redis
+        if cart_redis_dict:
+            # hmset要求设置的字典不能为空,只有合并之后的字典有数据,才能设置redis
+            redis_conn.hmset('cart_%s' % user.id, cart_redis_dict)
         # 从查询字符串中尝试获取next的参数
         # GET 从查询字符串中获取参数
-        #
         next_url = request.GET.get('next')
+        # 判断是否有数据
         if next_url is None:
+            # 没有,重定向到首页
             next_url = reverse('goods:index')
+        # 清除购物车cookie中的购物车数据
+        # 获取返回的对象
+        resp = redirect(next_url)
+        # 对象中删除cook
+        resp.delete_cookie('cart_info')
         # 返回,引导用户跳转到next指定的页面
-        return redirect(next_url)
+        return resp
 
 
 # 用户退出
 class LogoutView(View):
     """用户退出视图"""
-
     def get(self, request):
         """退出"""
         # 清除用户的登陆数据 session
@@ -469,10 +514,3 @@ class UsersInfoView(LoginRequiredMixin, View):
         return render(request, 'user_center_info.html', context)
 
 
-class UsersOrderView(LoginRequiredMixin, View):
-    def get(self,request):
-        pass
-
-
-class UsersCartView(LoginRequiredMixin, View):
-    pass

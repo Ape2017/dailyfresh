@@ -13,10 +13,10 @@
 <body>
 	<div class="header_con">
 		<div class="header">
-			<div class="welcome fl">欢迎来到天天生鲜!</div>
+			<div class="fl welcome"><a href="{% url 'goods:index' %}">欢迎来到天天生鲜!</a></div>
 			<div class="fr">
 				{% if user.is_authenticated %}
-				<div class="login_btn fl">
+				<div class=" login_btn fl">
 					欢迎您：<em>{{ user.username }}</em>
 					<span>|</span>
 					<a href="{% url 'users:logout' %}">退出</a>
@@ -32,9 +32,9 @@
 					<span>|</span>
 					<a href="{% url 'users:info' %}">用户中心</a>
 					<span>|</span>
-					<a href="{% url 'users:cart' %}">我的购物车</a>
+					<a href="{% url 'carts:info' %}">我的购物车</a>
 					<span>|</span>
-					<a href="{% url 'users:order' %}">我的订单</a>
+					<a href="{% url 'orders:place' %}">我的订单</a>
 				</div>
 			</div>
 		</div>		
@@ -62,13 +62,13 @@
 
 	<div class="footer">
 		<div class="foot_link">
-			<a href="#">关于我们</a>
+			<a href="{% url 'goods:index' %}">关于我们</a>
 			<span>|</span>
-			<a href="#">联系我们</a>
+			<a href="{% url 'goods:index' %}">联系我们</a>
 			<span>|</span>
-			<a href="#">招聘人才</a>
+			<a href="{% url 'goods:index' %}">招聘人才</a>
 			<span>|</span>
-			<a href="#">友情链接</a>		
+			<a href="https://www.baidu.com">友情链接</a>
 		</div>
 		<p>CopyRight © 2016 北京天天生鲜信息技术有限公司 All Rights Reserved</p>
 		<p>电话：010-****888    京ICP备*******8号</p>

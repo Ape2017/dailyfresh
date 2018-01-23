@@ -26,8 +26,9 @@ class LoginRequiredMixin(object):
             3.由于自定义的类视图是多继承该组件和视图类View的,MRO顺序表 cls--->LoginRequiredMixin--->View
             4.通过super函数调用View类视图中的as_view方法并返回一个view函数
             5.super(A,cls).as_view():表示在类对象cls和类A有继承关系时,通过super函数调用的方法是类cls的MRO顺序中A的上一级的类中的方法
-            6.通过装饰器login_required装饰super函数返回的view函数,当用户未登陆时会重定向到指定的url(settings.LOGIN_URL)页面
-            7.返回装饰后的view函数,供系统使用
+            6.通过装饰器login_required装饰super函数返回的view函数
+            7.当用户未登陆时会重定向到指定的url(settings.LOGIN_URL)页面
+            8.返回装饰后的view函数,供系统使用
         :param args:
         :param kwargs:
         :return: 装饰后的view函数

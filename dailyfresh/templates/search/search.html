@@ -36,9 +36,9 @@
 
         {% if page.has_previous or page.has_next %}
         <div class="pagenation">
-            {% if page.has_previous %}<a href="/search/?q={{ query }}&amp;page={{ page.previous_page_number }}">{% endif %}<上一页{% if page.has_previous %}</a>{% endif %}
+            {% if page.has_previous %}<a href="/search/?q={{ query }}&amp;page={{ page.previous_page_number }}">{% endif %}&lt;上一页{% if page.has_previous %}</a>{% endif %}
             |
-            {% if page.has_next %}<a href="/search/?q={{ query }}&amp;page={{ page.next_page_number }}">{% endif %}下一页>{% if page.has_next %}</a>{% endif %}
+            {% if page.has_next %}<a href="/search/?q={{ query }}&amp;page={{ page.next_page_number }}">{% endif %}下一页>&gt;{% if page.has_next %}</a>{% endif %}
         </div>
         {% endif %}
     </div>

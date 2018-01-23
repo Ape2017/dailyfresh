@@ -11,7 +11,7 @@
 				<span></span>
 				<ul class="subnav">
                     {% for category in categories %}
-                    <li><a href="#" class="{{ category.logo }}">{{ category.name }}</a></li>
+                    <li><a href="{% url 'goods:list' sku.category.id 1 %}" class="{{ category.logo }}">{{ category.name }}</a></li>
                     {% endfor %}
 				</ul>
 			</div>

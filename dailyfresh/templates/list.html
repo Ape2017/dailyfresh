@@ -79,7 +79,7 @@
 
 
 				{% if page_skus.has_next %}
-				<a href="{% url 'goods:list' category.id page_skus.next_page_number %}?sort={{ sort }}"&gt;下一页></a>
+				<a href="{% url 'goods:list' category.id page_skus.next_page_number %}?sort={{ sort }}">&gt;下一页</a>
                 {% endif %}
 			</div>
 		</div>
