@@ -373,8 +373,10 @@ class ListView(BaseCartView):
                 'page_nums': page_nums,
                 'sort': sort,
             }
-
+            # 缓存设置
             cache.set('category_%s' % category_id, context, DETAIL_DATA_CACHE_EXPIRES)
 
         # 返回渲染页面
-        return render(request, 'list.html', context)
+        render_obj = render(request, 'list.html', context)
+        print(render_obj)
+        return render_obj

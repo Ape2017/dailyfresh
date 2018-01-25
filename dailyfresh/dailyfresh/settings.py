@@ -348,7 +348,7 @@ TINYMCE_DEFAULT_CONFIG = {
 # haystack 全文检索配置
 HAYSTACK_CONNECTIONS ={
     'default': {
-        # 使用whoosh后端引擎,其中whoosh_backend为英文分词,不支持中文,支持中文需映入jieba
+        # 使用whoosh后端引擎,其中whoosh_backend为英文分词,不支持中文,支持中文需引入jieba
         'ENGINE': 'haystack.backends.whoosh_cn_backend.WhooshEngine',
         # 使用whoosh后端引擎,其中whoosh_cn_backend为引入jieba中文分词后的模块
         # 'ENGINE': 'haystack.backends.whoosh_cn_backend.WhooshEngine',
@@ -360,8 +360,18 @@ HAYSTACK_CONNECTIONS ={
 # 当添加、修改、删除数据时,自动生成索引
 HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 
-# 搜索结果页面分数的每页数量
+# 搜索结果页面中的每页显示的商品数量
 HAYSTACK_SEARCH_RESULTS_PER_PAGE = 10
+
+# 支付宝支付应用id
+ALIPAY_APPID = "2016081600258081"
+# 支付宝支付网关网址
+ALIPAY_GATEWAY = "https://openapi.alipaydev.com/gateway.do"
+
+# # django自动收集静态文件存放的目录
+# STATIC_ROOT = '/Users/delron/Desktop/static'
+
+
 
 
 

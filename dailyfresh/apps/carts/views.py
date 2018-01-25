@@ -22,6 +22,7 @@ from decimal import Decimal
 # 显示购物车信息,查询cookies和redis
 class InfoView(View):
     """购物车数据信息"""
+    print("infoinfoinfo")
     def get(self, request):
         """提供购物车页面"""
         # 获取购物车的数据
@@ -100,6 +101,7 @@ class AddView(View):
     url:carts/add
     请求数据:数据放到请求体中(仿照表单格式)
     """
+    print('ADDADDADD')
     def post(self, request):
         """
         处理用户在前端的操作,通过Ajax请求
@@ -216,6 +218,7 @@ class UpdateView(View):
     前端还是Ajax请求模式
     此处采用幂等请求,请求数据是最终存在数据库中的数据
     """
+    print('UPPUPPUPP')
     def post(self,request):
         """
         用于用户操作购物车页面时,对商品数量的增加和减少
@@ -228,6 +231,8 @@ class UpdateView(View):
         sku_id = request.POST.get('sku_id')
         # 商品数量
         sku_count = request.POST.get('sku_count')
+        print(sku_id)
+        print(sku_count)
         # 校验参数
         if not all([sku_id,sku_count]):
             # 参数不完整,返回提示
@@ -246,11 +251,9 @@ class UpdateView(View):
         except Exception:
             # 出现异常,返回提示
             return JsonResponse({'code':3,'errmsg':'数量信息有误'})
-
-        # 是否超过库存
+        # 判断传过来的数量是否超过库存
         if sku.stock < sku_count:
             return JsonResponse({'code': 4, 'errmsg': '库存不足'})
-
         # 保存数据,判断用户登录情况
         # 如果用户未登录
         if not request.user.is_authenticated():
@@ -265,7 +268,6 @@ class UpdateView(View):
             else:
                 # 将cart_dict设置空字典
                 cart_dict = {}
-
             # 设置商品的数量到字典中
             # 因为此链接为幂等,数据是最终存储的,不用查询之前的数据进行累加
             # 此处sku_id为字符串
@@ -299,7 +301,8 @@ class DeleteView(View):
     用户通过Ajax进行删除购物车数据的请求,收到请求后,
     通过查询cookie和redis,删除对应的商品信息
     """
-    def psot(self,request):
+    print('DELDELDEL')
+    def post(self,request):
         """
         删除购物车数据
         请求来自Ajax
@@ -309,11 +312,11 @@ class DeleteView(View):
         # 获取参数
         # 需要删除的sku_id
         sku_id = request.POST.get('sku_id')
+        print(sku_id)
         # 若获取不到sku_id,说明参数不正确
         if not sku_id:
             # 返回提示信息
-            return JsonResponse({'code':1,'errmsg':'参数不完整'})
-
+            return JsonResponse({'code': 1,'errmsg':'参数不完整'})
         # 删除购物车数据
         # 判断用户登录情况
         # 用户未登录,删除cookie中的数据
@@ -336,7 +339,7 @@ class DeleteView(View):
                 # 在,删除对应的键值对
                 del cart_dict[sku_id]
             # 设置返回对象,并将提示信息加载到对象中
-            resp = JsonResponse({'code': 0, 'errmsg': '设置成功'})
+            resp = JsonResponse({'code': 0, 'errmsg': '删除成功'})
             # 重新设置删除后返回对象的cookie,用于设置在前端浏览器中
             # set_cookie(name,Json,max_age)分别代表cookie名字,Json数据字符串,max_age有效期
             resp.set_cookie('cart_info', json.dumps(cart_dict), max_age=constants.CART_INFO_COOKIE_EXPIRES)

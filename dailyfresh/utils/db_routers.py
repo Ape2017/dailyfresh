@@ -3,7 +3,13 @@ class MasterSlaveRouter(object):
     """读写分离路由"""
 
     def db_for_read(self, model, **hints):
-        """读数据时访问的数据库"""
+        """
+        读数据时访问的数据库
+        :param model:
+        :param hints:
+        :return:
+        """
+
         return "slave"
 
     def db_for_write(self, model, **hints):

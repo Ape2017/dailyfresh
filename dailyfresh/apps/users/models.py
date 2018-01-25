@@ -32,7 +32,7 @@ class User(AbstractUser, BaseModel):
 
 class Address(BaseModel):
     """ORM收货地址模型类"""
-    # 用户id
+    # 用户对象
     user = models.ForeignKey(User, verbose_name="所属用户")
     # 收件人
     receiver_name = models.CharField(max_length=20, verbose_name="收件人")

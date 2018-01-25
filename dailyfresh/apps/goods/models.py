@@ -7,7 +7,7 @@ from tinymce.models import HTMLField
 
 class GoodsCategory(BaseModel):
     """商品类别表"""
-    name = models.CharField(max_length=20, verbose_name="名称")
+    GoodsCategory = models.CharField(max_length=20, verbose_name="名称")
     logo = models.CharField(max_length=100, verbose_name="标识")
     image = models.ImageField(upload_to="category", verbose_name="图片")
 

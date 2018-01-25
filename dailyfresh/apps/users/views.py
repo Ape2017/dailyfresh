@@ -2,7 +2,6 @@
 作用是根据不同的url模式作用数据库中的数据后返回给浏览器不同的html文件
 """
 # 正则匹配模块 校验用户输入的邮箱有效性时使用
-import json
 import re
 # 返回http页面
 from django.http import HttpResponse
@@ -36,6 +35,8 @@ from utils.commons import LoginRequiredMixin
 from django_redis import get_redis_connection
 # goods应用下的GoodsSKU商品模型类
 from goods.models import GoodsSKU
+#
+import json
 
 
 # 用户注册
